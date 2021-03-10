@@ -1,0 +1,20 @@
+{
+  // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+  // Pointez pour afficher la description des attributs existants.
+  // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "cl.exe - Générer et déboguer le fichier actif",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}/src",
+      "environment": [],
+      "console": "externalTerminal",
+      "preLaunchTask": "C/C++: cl.exe générer le fichier actif"
+    }
+  ]
+}

@@ -1,3 +1,9 @@
 out/*
 *.docx
 *.pdf
+
+src/*.exe
+src/*ilk
+src/*.pdb
+*.obj
+*.pdb
