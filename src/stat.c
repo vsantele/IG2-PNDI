@@ -11,16 +11,34 @@ struct resultClass {
 	ResultClass* pSuiv;
 };
 
-double accuracy(int realClasses[], int estimateClasses[], int nbTests);
-ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests);
-bool classExist(int numClass, ResultClass* results);
-ResultClass* createClass(int numClass/*, ResultClass** results */);
-bool correctEstimation(int real, int estimation);
-double toPercent(double ratio);
-double ratio(int num, int dem);
-ResultClass* searchClass(int numClass, ResultClass* pFirstResults);
+void freeResultClassLinkedList(ResultClass *pFirstResult);
 
-void displayResultForEachClass(int realClasses[], int estimateClasses[], int nbTests) {
+double accuracy(int realClasses[], int estimateClasses[], int nbTests);
+double toPercent(double ratio);
+double ratio(int num, int deno);
+
+bool classExist(int numClass, ResultClass* results);
+bool correctEstimation(int real, int estimation);
+
+ResultClass* createClass(int numClass);
+ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests);
+ResultClass* searchClass(int numClass, ResultClass* pFirstResult);
+
+int main()
+{
+	int realClasses[] = { 5, 2, 5, 3, 5, 3, 2, 4 };
+	int estimateClasses[] = { 5, 5, 1, 2, 1, 3, 2, 4 };
+	int nbTests = 8;
+
+	displayAccuracy(realClasses, estimateClasses, nbTests);
+
+	displayResultForEachClass(realClasses, estimateClasses, nbTests);
+	getchar();
+	return 0;
+}
+
+void displayResultForEachClass(int realClasses[], int estimateClasses[], int nbTests)
+{
 	ResultClass* pFirstResults = resultsForEachClass(realClasses, estimateClasses, nbTests);
 
 	ResultClass* pResult = pFirstResults;
@@ -30,6 +48,8 @@ void displayResultForEachClass(int realClasses[], int estimateClasses[], int nbT
 
 		pResult = pResult->pSuiv;
 	}
+
+	freeResultClassLinkedList(pFirstResults);
 }
 
 void displayAccuracy(int realClasses[], int estimateClasses[], int nbTests) {
@@ -45,6 +65,7 @@ ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int n
 
 	for (int iClass = 0; iClass < nbTests; iClass++) {
 		ResultClass* searchedClass = searchClass(realClasses[iClass], pFirstResults);
+
 		if (searchedClass == NULL) { // Liste est vide
 		  pFirstResults = createClass(realClasses[iClass]);
 			searchedClass = pFirstResults;
@@ -63,12 +84,12 @@ ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int n
 	return pFirstResults;
 }
 
-ResultClass* searchClass(int numClass, ResultClass* pFirstResults) {
-	if (pFirstResults == NULL) { // liste chainée est vide
+ResultClass* searchClass(int numClass, ResultClass* pFirstResult) {
+	if (pFirstResult == NULL) { // liste chainée est vide
 		return NULL;
 	}
 	
-	ResultClass* pResult = pFirstResults;
+	ResultClass* pResult = pFirstResult;
 
 	while (pResult->numClass != numClass && pResult->pSuiv != NULL) {
 		pResult = pResult->pSuiv;
@@ -78,15 +99,15 @@ ResultClass* searchClass(int numClass, ResultClass* pFirstResults) {
 }
 
 double accuracy(int realClasses[], int estimateClasses[], int nbTests) {
-	int correctEstimation = 0;
+	int correctEstimationCounter = 0;
 
 	for (int iClass = 0; iClass < nbTests; iClass++) {
-		if (realClasses[iClass] == estimateClasses[iClass]) {
-			correctEstimation++;
+		if (correctEstimation(realClasses[iClass], estimateClasses[iClass])) {
+			correctEstimationCounter++;
 		}
 	}
 
-	return (double) correctEstimation / nbTests;
+	return (double)correctEstimationCounter / nbTests;
 }
 
 bool classExist(int numClass, ResultClass* results) {
@@ -103,20 +124,13 @@ bool classExist(int numClass, ResultClass* results) {
 	return result != NULL;
 }
 
-ResultClass* createClass(int numClass/*, ResultClass** results */) {
-	// ResultClass* result = *results;
-
-	// while (result != NULL && result->pSuiv != NULL) {
-	// 	result = result->pSuiv;
-	// }
-	
+ResultClass* createClass(int numClass) {
 	ResultClass* pNewClass = (ResultClass*)malloc(sizeof(ResultClass));
 	pNewClass->nbCorrect = 0;
 	pNewClass->nbTotal = 0;
 	pNewClass->numClass = numClass;
 	pNewClass->pSuiv = NULL;
 
-	// result->pSuiv = newClass;
 	return pNewClass;
 }
 
@@ -133,15 +147,14 @@ bool correctEstimation(int real, int estimation) {
 	return real == estimation;
 }
 
-int main()
+void freeResultClassLinkedList(ResultClass* pFirstResult)
 {
-	int realClasses[] = { 5, 2, 5, 3, 5, 3, 2, 4 };
-	int estimateClasses[] = { 5, 5, 1, 2, 1, 3, 2, 4 };
-	int nbTests = 8;
+	ResultClass* pClass = pFirstResult;
 
-	displayAccuracy(realClasses, estimateClasses, nbTests);
+	while(pClass != NULL){
+		ResultClass* pClassNext = pClass->pSuiv;
+		free(pClass);
 
-	displayResultForEachClass(realClasses, estimateClasses, nbTests);
-	getchar();
-	return 0;
+		pClass = pClassNext;
+	}
 }

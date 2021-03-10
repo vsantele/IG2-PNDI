@@ -1,5 +1,9 @@
 @startuml programme
 header test
+left to right direction
+
+together {
+    
 note "--> = fonction appelle une autre fonction" as note1
 
 map "Constantes " as constantes {
@@ -9,10 +13,15 @@ map "Constantes " as constantes {
 
 
 map "ResultClass"  as resClas {
+    numClass => int
     nbCorrect => int
     nbTotal => int
+    pSuiv => ptr ResultClass
 }
 
+note1 -[hidden] constantes
+note1 -[hidden] resClas
+}
 ' Fonctions affichage
 object "void displayResultsForEachClass()" as drfec {
     **arguments**
@@ -23,6 +32,7 @@ object "void displayResultsForEachClass()" as drfec {
     **do**
     affiche le tableau proprement sur base des résultats
     calculer par resultForEachClass()
+    à la fin, libère la mémoire avec freeResultClassLinkedList();
 }
 
 object "void displayAccuracy()" as da {
@@ -47,23 +57,33 @@ object "void displayClass()" as dc {
 
 'Fonctions calcul
 
-object "int resultsForEachClass()" as main {
+object "ResultClass* resultsForEachClass()" as main {
     **arguments**
     - int realClasses[]
     - int estimateClasses[]
     - int nbTests
-    - ResultClass results[NB_TESTS_MAX]
     --
     **do**
-    initaliser le tableau result avec nbCorrect et nbTotal à 0 pour toutes les cellules
-
+    set le pointeur de début de la liste chainée à NULL.
     Boucle 'nbTests' fois sur les entrées.
-
     Pour chaque entrée :
-    dans la ligne realClass-1 à la colonne estimateClass-1 on ajoute 1
+    recherche la bonne classe dans la liste chainée avec searchClass()
+    Si la recherche retourne NULL:
+    on set pFirstClass avec la classe créé grâce à createClass()
+    on utilise la classe créé pour la suite
+    Si la le numéro de classe retourné par la recherche ne correspond pas à la classe demandé:
+    on créé une nouvelle classe que l'on met à la suite du pointeur retourné.
+    et on utilise cette nouvelle classe pour la suite.
+    \n
+    on vérifié l'estimation grâce à correctEstimation()
+    si l'estimation est correcte:
+    on ajoute 1 au nombre de résultat correct
+    \n
+    dans tous les cas on ajoute 1 dans le nbTotal
+    
     --
     **return**
-    la taille du tableau results
+    L'adresse du premier chainon de la liste chainée
 }
 
 object "bool correctEstimation()" as corEst {
@@ -75,7 +95,7 @@ object "bool correctEstimation()" as corEst {
     vérifie si l'estimation est correct
     --
     **return**
-    bool correct
+    vrai si l'estimation est correct, faux si elle ne l'est pas
 }
 
 object "double toPercent()" as pct {
@@ -89,45 +109,57 @@ object "double toPercent()" as pct {
     double percent
 }
 
+object "double ratio()" as ratio {
+    **arguments**
+    - int num, int den
+     --
+    **do**
+    Calcul le ratio entre 2 nombres entier
+    --
+    **return**
+    le ratio des 2 nombres ou 0 si le dénominateur est égal 0
+}
+
 
 'note left of creClass : Précondition:\nla classe n'existe pas\ndans result
 
-object "int createClass()" as creClass {
+object "ResultClass* createClass()" as creClass {
     **arguments**
-    - ResultClass results[]
-    - int resultsLength
-    - int class
+    - int numClass
     --
     **do**
-    ajoute une nouvelle classe
-    augmente la taille du tableau
+    créer un nouvel espace mémoire pour la structure ResultClass créée 
+    et initialise son num en fonction de la classe et le reste 
+    de ses arguments à zéros
     --
     **return**
-    int newLength
+    L'adresse du nouveau chainon
 }
 
-object "bool classExist()" as ce {
+object "ResultClass* searchClass()" as seaCla {
     **arguments**
-    - int class
-    - ResultClass results[]
+    - int numClass
+    - ResultClass* pFirstResult
     --
     **do**
-    Vérifie si une classe existe déjàf
-    dans le tableau de résultats
+    recherche la classe correspondante à numClass
+    
     --
     **return**
-    bool exist
+    si pFirstResult est NULL : NULL
+    si on arrive en fin de list sans trouver le bon chainon: le dernier chainon
+    sinon: le chainon correspondant à l'élément recherché.
 }
 
 object "double accuracy()" as acc {
     **arguments**
     - int realClasses[]
     - int estimateClasses[]
-    - int length
+    - int nbTests
     --
     **do**
     calcule la précision des résultats en bouclant 1 fois
-    et en vérifiant si les nombres correspondent.
+    et en vérifiant si les nombres correspondent grâce à correctEstimation().
     --
     **return**
     un double entre 0 et 1 qui correspond
@@ -138,15 +170,27 @@ object "int statsClass()" as staCla {
     
 }
 
+object "void freeResultClassLinkedList()" as freeRCLL {
+    **arguments**
+    - ResultClass* pFirstResult
+    --
+    **do**
+    libère de la mémoire le contenu de la liste chainée.
+}
+
 ' Liens
 'main --> corEst
 main --> corEst
-main --> ce
+main --> seaCla
 main --> creClass
 drfec --> pct
 drfec --> main
+drfec --> ratio
 da --> acc
+acc --> corEst
 da --> pct
+drfec --> freeRCLL
+dc --> staCla
 ' note left of drfec: "bonjour"
 
 @enduml
