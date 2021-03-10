@@ -1,56 +1,72 @@
 @startuml programme
 header test
-note "--> = fonction appel une autre fonction" as note1
+note "--> = fonction appelle une autre fonction" as note1
 
 map "Constantes " as constantes {
     NB_CLASSES_MAX => 20
     NB_TESTS_MAX => 10000
 }
 
-map "struct ResultClass" as resClass {
-    classId => int
+
+map "ResultClass"  as resClas {
     nbCorrect => int
     nbTotal => int
-}   
-
-' Fonctions affichage
-object "void displayResultsForEachClasses" as drfec {
-     **arguments**
-     - ResultClass results[]
-     - int resultsLength
-    --
-    **do**
-    affiche le tableau proprement sur base de results
 }
 
-object "void displayAccuracy" as da {
-     **arguments**
-     - double accuracy
+' Fonctions affichage
+object "void displayResultsForEachClass()" as drfec {
+    **arguments**
+    - int realClasses[]
+    - int estimateClasses[]
+    - int nbTests
     --
+    **do**
+    affiche le tableau proprement sur base des résultats
+    calculer par resultForEachClass()
+}
+
+object "void displayAccuracy()" as da {
+    **arguments**
+    - int realClasses[]
+    - int estimateClasses[]
+    - int nbTests
     **do**
     affiche la précision
 }
 
-object "void displayClass" as dc {
-     **arguments**
-     A editer
+object "void displayClass()" as dc {
+    **arguments**
+    - int realClasses[]
+    - int estimateClasses[]
+    - int nbTests
+    --
+    **do**
+     
 }
+
 
 'Fonctions calcul
 
-object "void processStats" as main {
-     **arguments**
+object "int resultsForEachClass()" as main {
+    **arguments**
     - int realClasses[]
     - int estimateClasses[]
-     - int length
-     - ResultClass results[]
-     --
-     **do**
-    boucle 'length' fois pour completer le tableau results
+    - int nbTests
+    - ResultClass results[NB_TESTS_MAX]
+    --
+    **do**
+    initaliser le tableau result avec nbCorrect et nbTotal à 0 pour toutes les cellules
 
+    Boucle 'nbTests' fois sur les entrées.
+
+    Pour chaque entrée :
+    dans la ligne realClass-1 à la colonne estimateClass-1 on ajoute 1
+    --
+    **return**
+    la taille du tableau results
 }
 
-object "bool correctEstimation" as corEst {
+object "bool correctEstimation()" as corEst {
     **arguments**
     - int real
     - int estimate
@@ -62,38 +78,21 @@ object "bool correctEstimation" as corEst {
     bool correct
 }
 
-object "double percent" as pct {
-     **arguments**
-    - int num
-    - int den
+object "double toPercent()" as pct {
+    **arguments**
+    - double ratio
      --
     **do**
-     calcule le pourcentage sur base
-     du ratio de 2 nombres
-     renvoi 0 si den == 0
+    converti un ratio en poucentage
     --
     **return**
     double percent
 }
 
-object "int updateArray" as upAr {
-     **arguments**
-    - ResultClass results[]
-    - int resultsLength
-    - int class
-    - bool isCorrect
-     --
-    **do**
-    création classe dans résult si n'existe pas
-     met à jour la classe envoyé
-    --
-    **return**
-    int newLength
-}
 
 'note left of creClass : Précondition:\nla classe n'existe pas\ndans result
 
-object "int createClass" as creClass {
+object "int createClass()" as creClass {
     **arguments**
     - ResultClass results[]
     - int resultsLength
@@ -107,39 +106,47 @@ object "int createClass" as creClass {
     int newLength
 }
 
-object "bool classExist" as ce {
+object "bool classExist()" as ce {
     **arguments**
     - int class
     - ResultClass results[]
     --
     **do**
-    Vérifie si une classe existe déjà
+    Vérifie si une classe existe déjàf
     dans le tableau de résultats
     --
     **return**
     bool exist
 }
 
-object "double accuracy" as acc {
+object "double accuracy()" as acc {
     **arguments**
-    - ResultClass results[]
-    - int resultsLength
+    - int realClasses[]
+    - int estimateClasses[]
+    - int length
     --
     **do**
-    calcule la précision des résultats
+    calcule la précision des résultats en bouclant 1 fois
+    et en vérifiant si les nombres correspondent.
     --
     **return**
-    double accuracy
+    un double entre 0 et 1 qui correspond
+    au ratio de bonne réponse
+}
+
+object "int statsClass()" as staCla {
+    
 }
 
 ' Liens
-main --> upAr
+'main --> corEst
 main --> corEst
-upAr --> ce
-upAr --> creClass
+main --> ce
+main --> creClass
 drfec --> pct
+drfec --> main
 da --> acc
-
+da --> pct
 ' note left of drfec: "bonjour"
 
 @enduml
