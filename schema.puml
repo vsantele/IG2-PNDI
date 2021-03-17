@@ -1,27 +1,26 @@
 @startuml programme
-header test
+title __**Analyse du projet « reconnaissance d’activité humaine via un smartphone. »**__
+caption Par Thibaut Berg, Joachim Lejeune  et Victor Santelé
 left to right direction
 
-together {
-    
-note "--> = fonction appelle une autre fonction" as note1
+legend top left
+--> = fonction appelle une autre fonction
+end legend
 
-map "Constantes " as constantes {
+
+
+map "Constantes " as constantes #lightgrey {
     NB_CLASSES_MAX => 20
     NB_TESTS_MAX => 10000
 }
 
-
-map "ResultClass"  as resClas {
+map "struct ResultClass"  as resClas #lightgrey {
     numClass => int
     nbCorrect => int
     nbTotal => int
     pSuiv => ptr ResultClass
 }
 
-note1 -[hidden] constantes
-note1 -[hidden] resClas
-}
 ' Fonctions affichage
 object "void displayResultsForEachClass()" as drfec {
     **arguments**
@@ -40,6 +39,7 @@ object "void displayAccuracy()" as da {
     - int realClasses[]
     - int estimateClasses[]
     - int nbTests
+    --
     **do**
     affiche la précision
 }
@@ -51,7 +51,9 @@ object "void displayClass()" as dc {
     - int nbTests
     --
     **do**
-     
+    affiche le tableau proprement.
+    Utilise statsClass() pour ordonner les données
+    et sumElements() pour le total pour chaque classe.
 }
 
 
@@ -71,16 +73,13 @@ object "ResultClass* resultsForEachClass()" as main {
     Si la recherche retourne NULL:
     on set pFirstClass avec la classe créé grâce à createClass()
     on utilise la classe créé pour la suite
-    Si la le numéro de classe retourné par la recherche ne correspond pas à la classe demandé:
-    on créé une nouvelle classe que l'on met à la suite du pointeur retourné.
-    et on utilise cette nouvelle classe pour la suite.
-    \n
-    on vérifié l'estimation grâce à correctEstimation()
+    Si le numéro de classe retourné par la recherche ne correspond pas à la classe demandée:
+    on crée une nouvelle classe que l'on met à la suite du pointeur retourné.
+    et on utilise cette nouvelle classe pour la suite. \n
+    on vérifie l'estimation grâce à correctEstimation()
     si l'estimation est correcte:
-    on ajoute 1 au nombre de résultat correct
-    \n
+    on ajoute 1 au nombre de résultat correct\n
     dans tous les cas on ajoute 1 dans le nbTotal
-    
     --
     **return**
     L'adresse du premier chainon de la liste chainée
@@ -93,6 +92,7 @@ object "bool correctEstimation()" as corEst {
     --
     **do**
     vérifie si l'estimation est correct
+    (que les nombres soient égaux)
     --
     **return**
     vrai si l'estimation est correct, faux si elle ne l'est pas
@@ -167,7 +167,34 @@ object "double accuracy()" as acc {
 }
 
 object "int statsClass()" as staCla {
+    **arguments**
+    - int realClasses[]
+    - int estimateClasses[]
+    - int nbTests
+    - int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]
+    --
+    **do**
+    initialise nbMax (le numéro de la classe la plus élevé à 0)
+    boucle nbTests fois et pour chaque real et estimate class:
+    ajoute 1 dans la ligne correspondant à realclass à la colonne
+    correspondant à estimateclass (num - 1)
+    Met à jour nbMax si nécessaire par rapport à la real et estimate class.
     
+    --
+    **return**
+    le numéro le plus grand trouvé dans realClasses ou estimateClasses.
+}
+
+object "int sumElements()" as nbEl {
+    **arguments**
+    - int tab[]
+    - int taille
+    --
+    **do**
+    additionne les nombres dans le tableau
+    --
+    **return**
+    la somme des éléments
 }
 
 object "void freeResultClassLinkedList()" as freeRCLL {
@@ -179,7 +206,6 @@ object "void freeResultClassLinkedList()" as freeRCLL {
 }
 
 ' Liens
-'main --> corEst
 main --> corEst
 main --> seaCla
 main --> creClass
@@ -191,6 +217,6 @@ acc --> corEst
 da --> pct
 drfec --> freeRCLL
 dc --> staCla
-' note left of drfec: "bonjour"
+dc --> nbEl
 
 @enduml

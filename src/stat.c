@@ -24,15 +24,21 @@ ResultClass* createClass(int numClass);
 ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests);
 ResultClass* searchClass(int numClass, ResultClass* pFirstResult);
 
+int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]);
+int initTabStats(int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]);
+int sumElements(int tab[], int taille);
+
 int main()
 {
-	int realClasses[] = { 5, 2, 5, 3, 5, 3, 2, 4 };
+	int realClasses[] = 		{ 5, 2, 5, 3, 5, 3, 2, 4 };
 	int estimateClasses[] = { 5, 5, 1, 2, 1, 3, 2, 4 };
 	int nbTests = 8;
 
 	displayAccuracy(realClasses, estimateClasses, nbTests);
 
 	displayResultForEachClass(realClasses, estimateClasses, nbTests);
+
+	displayClass(realClasses, estimateClasses, nbTests);
 	getchar();
 	return 0;
 }
@@ -56,9 +62,6 @@ void displayAccuracy(int realClasses[], int estimateClasses[], int nbTests) {
 	printf("L accuracy est de %.2f%%\n", toPercent(accuracy(realClasses, estimateClasses, nbTests)));
 }
 
-void displayClass(int realClasses[], int estimateClasses[], int nbTests) {
-	printf("Display class");
-}
 
 ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests) {
 	ResultClass* pFirstResults = NULL;
@@ -157,4 +160,55 @@ void freeResultClassLinkedList(ResultClass* pFirstResult)
 
 		pClass = pClassNext;
 	}
+}
+
+int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]) {
+	int nbMax = 0;
+	
+	for(int i = 0; i < nbTests; i++) {
+		if (nbMax < realClasses[i]) {
+			nbMax = realClasses[i];
+		}
+		if (nbMax < estimateClasses[i])
+		{
+			nbMax = estimateClasses[i];
+		}
+		tabStats[realClasses[i] - 1][estimateClasses[i] - 1] += 1;
+	}
+	return nbMax;
+}
+
+void displayClass(int realClasses[], int estimateClasses[], int nbTests) {
+	int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX] = {0};
+	int nbMax = statsClass(realClasses, estimateClasses, nbTests, tabStats);
+
+	printf("\tA classer\t|");
+	for (int i = 0; i < nbMax; i++) {
+		printf("%d\t", i + 1);
+	}
+	printf("\n");
+	for (int i = 0; i < 59; i++) {
+		printf("=");
+	}
+	printf("\n");
+	printf("libelle\t\tnombre\t|\n");
+	for (int i = 0; i < nbMax; i++)
+	{
+		printf("%d\t\t%d\t|", i + 1, sumElements(tabStats[i], nbMax));
+		for (int j = 0; j < nbMax; j++)
+		{
+			printf("%d\t", tabStats[i][j]);
+		}
+
+		printf("\n");
+	}
+}
+
+int sumElements(int tab[], int taille)
+{
+	int sum = 0;
+	for(int i=0; i < taille; i++) {
+		sum += tab[i];
+	}
+	return sum;
 }
