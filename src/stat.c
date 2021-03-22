@@ -17,6 +17,7 @@ double accuracy(int realClasses[], int estimateClasses[], int nbTests);
 double toPercent(double ratio);
 double ratio(int num, int deno);
 
+//pourquoi proto et def mais pas de use et plus dans le mapping
 bool classExist(int numClass, ResultClass* results);
 bool correctEstimation(int real, int estimation);
 
@@ -24,13 +25,15 @@ ResultClass* createClass(int numClass);
 ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests);
 ResultClass* searchClass(int numClass, ResultClass* pFirstResult);
 
+//pourquoi protomais pas de def et pas de use, et plus dans le mapping
 int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]);
+//pourquoi protomais pas de def et pas de use, et plus dans le mapping
 int initTabStats(int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]);
 int sumElements(int tab[], int taille);
 
 int main()
 {
-	int realClasses[] = 		{ 5, 2, 5, 3, 5, 3, 2, 4 };
+	int realClasses[] = { 5, 2, 5, 3, 5, 3, 2, 4 };
 	int estimateClasses[] = { 5, 5, 1, 2, 1, 3, 2, 4 };
 	int nbTests = 8;
 
