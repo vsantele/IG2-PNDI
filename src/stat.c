@@ -16,24 +16,18 @@ void freeResultClassLinkedList(ResultClass *pFirstResult);
 double accuracy(int realClasses[], int estimateClasses[], int nbTests);
 double toPercent(double ratio);
 double ratio(int num, int deno);
-
-//pourquoi proto et def mais pas de use et plus dans le mapping
-bool classExist(int numClass, ResultClass* results);
 bool correctEstimation(int real, int estimation);
 
 ResultClass* createClass(int numClass);
 ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests);
 ResultClass* searchClass(int numClass, ResultClass* pFirstResult);
 
-//pourquoi protomais pas de def et pas de use, et plus dans le mapping
 int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]);
-//pourquoi protomais pas de def et pas de use, et plus dans le mapping
-int initTabStats(int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]);
 int sumElements(int tab[], int taille);
 
-int main()
+int main(void)
 {
-	int realClasses[] = { 5, 2, 5, 3, 5, 3, 2, 4 };
+	int realClasses[] = 		{ 5, 2, 5, 3, 5, 3, 2, 4 };
 	int estimateClasses[] = { 5, 5, 1, 2, 1, 3, 2, 4 };
 	int nbTests = 8;
 
@@ -64,7 +58,6 @@ void displayResultForEachClass(int realClasses[], int estimateClasses[], int nbT
 void displayAccuracy(int realClasses[], int estimateClasses[], int nbTests) {
 	printf("L accuracy est de %.2f%%\n", toPercent(accuracy(realClasses, estimateClasses, nbTests)));
 }
-
 
 ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests) {
 	ResultClass* pFirstResults = NULL;
@@ -114,20 +107,6 @@ double accuracy(int realClasses[], int estimateClasses[], int nbTests) {
 	}
 
 	return (double)correctEstimationCounter / nbTests;
-}
-
-bool classExist(int numClass, ResultClass* results) {
-	if (results == NULL) {
-		return false;
-	}
-
-	ResultClass* result = results;
-
-	while (result != NULL && result->numClass != numClass) {
-		result = result->pSuiv;
-	}
-
-	return result != NULL;
 }
 
 ResultClass* createClass(int numClass) {
@@ -190,7 +169,9 @@ void displayClass(int realClasses[], int estimateClasses[], int nbTests) {
 		printf("%d\t", i + 1);
 	}
 	printf("\n");
-	for (int i = 0; i < 59; i++) {
+	int lineLength = 25 + 7 * nbMax;
+	for (int i = 0; i < lineLength; i++)
+	{
 		printf("=");
 	}
 	printf("\n");
