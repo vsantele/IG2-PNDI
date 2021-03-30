@@ -1,0 +1,56 @@
+LINES_COUNT = 600
+DATA_SUBJECT_INFO_FILENAME = "data_subjects_info.csv"
+TEST_OUTPUT_FILENAME = "testSet.csv"
+TRAIN_OUTPUT_FILENAME = "trainSet.csv"
+---*
+module(createHeader; TEST_OUTPUT_FILENAME)
+module(createHeader; TRAIN_OUTPUT_FILENAME)
+
+module(getFolders; root; folders, nbFolders)
+module(readUsers; DATA_SUBJECT_INFO_FILENAME; users)
+iFolders = 0
+do while (iFolders < nbFolder)
+  module(getFiles;dossiers[iFolders];files, nbFiles)
+  module(getMovement; dossiers[iFolders]; movement)
+  iFiles = 0
+  do while (iFiles < nbFiles)
+    id = iFolder*nbUsers+iFile
+    module(getGender; files[iFiles], users; gender)
+    module(randomWriteFile; ;outputFileName)
+    module(processFile; files[iFiles],outputFileName, movement, id, gender;)
+    iFiles++
+  enddo
+  iFolders++
+enddo
+----
+
+module(processFile; inputFilename, outputFilename, movement, id, gender;)
+---*
+  module(openFile; outputFilename, 'append'; outputData)
+  module(openFile;inputFilename, 'read'; inputData)
+  // remove headers
+  module(getNextLine; inputData;line, isEndOfFile) 
+  module(getNextLine; inputData;line, isEndOfFile)
+   // movement, identifiant
+  module(writeInfo; foldername, id, outputData;)
+  lineNumber = 1
+  do while (!isEndOfFile && lineNumber <= LINES_COUNT )
+    module(getAccVector; line; vector)
+    module(writeVector;vector, outputData;)
+    module(getNextLine; inputData;line, isEndOfFile)
+    lineNumber++
+  enddo
+  module(writeGender, outputData, gender;)
+  module(writeNewLine, outputData)
+----
+
+module(randomWriteFile; ;outputFilename)
+---*
+module(random;;rand)
+
+if (rand <= 0.1)
+  outputFilename = TEST_OUTPUT_FILENAME
+else
+  outputFilename = TRAIN_OUTPUT_FILENAME
+endif
+----
