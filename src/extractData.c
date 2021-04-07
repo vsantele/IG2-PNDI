@@ -89,10 +89,11 @@ double getfield(char line[], int num)
 {
   char lineCpy[1024];
   strcpy_s(lineCpy, 1024, line);
-  const char *tok;
-  for (tok = strtok(lineCpy, ",");
-       tok && *tok;
-       tok = strtok(NULL, ",\n"))
+  const char* tok;
+  char* nextToken;
+  for (tok = strtok_s(lineCpy, ",", &nextToken);
+    tok && *tok;
+    tok = strtok_s(NULL, ",\n", &nextToken))
   {
     if (!--num)
       return atof(tok);
@@ -120,8 +121,5 @@ errno_t readUsersGender(int usersGender[])
 }
 
 void getMovement(char movement[], char folderName[]) {
-  char folderCpy[FOLDER_NAME_LENGTH];
-  strcpy_s(folderCpy, FOLDER_NAME_LENGTH, folderName);
-  char *out = strtok(folderCpy, "_");
-  strcpy_s(movement, 4, out);
+  strncpy_s(movement, 4, folderName, 3);
 }
