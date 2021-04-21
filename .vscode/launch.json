@@ -8,12 +8,13 @@
       "name": "cl.exe - Générer et déboguer le fichier actif",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+      "program": "${fileDirname}\\Debug\\${fileBasenameNoExtension}.exe",
       "args": [],
       "stopAtEntry": false,
-      "cwd": "${workspaceFolder}/src",
+      // "cwd": "${workspaceFolder}",
+      "cwd": "${fileDirname}/Debug",
       "environment": [],
-      "console": "externalTerminal",
+      "console": "integratedTerminal",
       "preLaunchTask": "C/C++: cl.exe générer le fichier actif"
     }
   ]
