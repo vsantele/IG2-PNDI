@@ -8,6 +8,9 @@
  
  Le plus gros est fait, il faut encore relire le code et tout revérifier.
 
+## Phase 2
+  - Analyse Terminée, il faut peut-être modifier le nom de certaines variables
+
 # Participants
  - Joachim Lejeune
  - Thibaut Berg
