@@ -76,7 +76,7 @@ errno_t extractData() {
         int gender = getGender(userCode, usersGender);
         sprintf_s(path, PATH_LENGTH, "%s/%s/sub_%d.csv", ROOT_DATA_PATH, folderNames[iFolder], userCode);
         FILE *fiOut = getRandomWriteFile(fiTestData, fiTrainData);
-        int err = readFile(path, fiOut, userCode, gender, idMovement);
+        int err = readFile(path, fiOut, userCode, idMovement, gender );
       }
     }
   }
@@ -151,8 +151,6 @@ int getGender(int userCode, int users[]) {
 
 errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
 {
-  
-
   FILE *fiIn = NULL;
   errno_t err = fopen_s(&fiIn, path, "r");
   if (fiIn == NULL)
@@ -163,7 +161,7 @@ errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
   char line[256];
   fgets(line, 256, fiIn); // remove header
   int nLines = 0;
-  fprintf_s(fiOut, "%d,%d,%d", userId, movement, gender);
+  fprintf_s(fiOut, "%d,%d,%d,", userId, movement, gender);
   while (!feof(fiIn) > 0 && nLines < LINES_COUNT) {
     fgets(line, 256, fiIn);
     double accVec = getAccVector(line);
