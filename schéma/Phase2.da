@@ -1,0 +1,86 @@
+FI_MODEL_FILENAME = "fiModel.csv"
+FI_MODEL_MEN_FILENAME = "fiModelMen.csv"
+FI_MODEL_WOMEN_FILENAME = "fiModelWomen.csv"
+FI_TRAIN_FILENAME = "train.csv"
+NB_VAR_MAX = 600
+enum gender = {FEMALE, MALE}
+
+---*
+module(openFile;FI_TRAIN_FILENAME, "read";fiTrain)
+
+module(openFile;FI_MODEL_FILENAME, "write"; fiModel)
+module(openFile;FI_MODEL_MEN_FILENAME, "write"; fiMenModel)
+module(openFile;FI_MODEL_WOMEN_FILENAME, "write"; fiWomenModel)
+
+module(writeHeader; fiModel; )
+module(writeHeader; fiMenModel; )
+module(writeHeader; fiWomenModel; )
+
+module(removeHeader; fiTrain; fiTrain)
+
+module(getLine; fiTrain; line)
+do while (!eof)
+  module(getMovement; line; curMovement)
+  movement = curMovement
+  modelMen[NB_VAR_MAX] = {0} // tableau de somme des valeurs existantes par VAR pour un homme
+  nbModelMen[NB_VAR_MAX] = {0} //  tableau de nombre de valeur par VAR pour un homme
+  modelWomen[NB_VAR_MAX] = {0} //  tableau de somme des valeurs existantes par VAR pour une femme
+  nbModelWomen[NB_VAR_MAX] = {0} //  tableau de nombre de valeur par VAR pour une femme
+  
+  do while(!eof(fiTrain) && movement == curMovement)
+    module(getGender; line; gender)
+
+    if (gender == MALE)
+      module(readLine; line, modelMen,nbModelMen;modelMen,nbModelMen)
+    else
+      module(readLine; line, modelWomen,nbModelWomen;modelWomen,nbModelWomen)
+    endif
+    
+    module(getLine; fiTrain; line)
+    module(getMovement; line; curMovement)
+  enddo
+  module(writeFile; modelMen, nbModelMen, modelWomen, nbModelWomen, movement)
+enddo
+
+module(closeFile;fiTrain;)
+module(closeFile;fiModel;)
+module(closeFile;fiMenModel;)
+module(closeFile;fiWomenModel;)
+----
+
+module(writeFile; modelMen, nbModelMen, modelWomen, nbModelWomen, movement, fiModel, fiMenModel, fiWomenModel)
+---*
+
+module(writeMovement; fiModel, movement;)
+module(writeMovement; fiMenModel, movement;)
+module(writeMovement; fiWomenModel, movement;)
+
+i = 0
+do while (i < NB_VAR_MAX)
+  menMean = modelMen[i] / nbModelMen[i]
+  womenMean = modelWomen[i] / nbModelWomen[i]
+  mean = (modelMen[i] + modelWomen[i]) / (nbModelMen[i] + nbModelWomen[i])
+  module(writeValue;fiMenModel, menMean ; )
+  module(writeValue;fiWomenModel, womenMean ; )
+  module(writeValue;fiModel, mean ; )
+  i++
+enddo
+  module(writeNewLine; fiMenModel;)
+  module(writeNewLine; fiWomenModel;)
+  module(writeNewLine; fiModel;)
+
+----
+
+module(readLine; line, tab, nbTab;tab, nbTab)
+// tab = tableau de la somme des valeurs existantes par VAR
+// nbTab = tableau du nombre de valeurs par VAR
+---*
+iValue = 0
+
+do while (!eol(line) && iValue < NB_VAR_MAX)
+  module(getField; line, iValue+3; value)
+  tab[iValue] += value;
+  nbTab[iValue]++
+  iValue++
+enddo
+----
