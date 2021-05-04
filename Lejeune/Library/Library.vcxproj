@@ -140,6 +140,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="extractData.c" />
+    <ClCompile Include="phase2.c" />
     <ClCompile Include="stat.c" />
   </ItemGroup>
   <ItemGroup>

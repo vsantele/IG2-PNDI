@@ -68,7 +68,7 @@ ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int n
 			pFirstResults = createClass(realClasses[iClass]);
 			searchedClass = pFirstResults;
 		}
-		else if (searchedClass->numClass != realClasses[iClass]) { // Classe cherchée n'est pas dans la liste
+		else if (searchedClass->numClass != realClasses[iClass]) { // Classe cherchï¿½e n'est pas dans la liste
 			searchedClass->pSuiv = createClass(realClasses[iClass]);
 			searchedClass = searchedClass->pSuiv;
 		}
@@ -84,7 +84,7 @@ ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int n
 }
 
 ResultClass* searchClass(int numClass, ResultClass* pFirstResult) {
-	if (pFirstResult == NULL) { // liste chainée est vide
+	if (pFirstResult == NULL) { // liste chainï¿½e est vide
 		return NULL;
 	}
 

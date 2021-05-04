@@ -10,6 +10,7 @@
 
 ## Phase 2
   - Analyse Terminée, il faut peut-être modifier le nom de certaines variables
+  - Code fonctionnel, nécessite review
 
 # Participants
  - Joachim Lejeune

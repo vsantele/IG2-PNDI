@@ -22,18 +22,22 @@ module(getLine; fiTrain; line)
 do while (!eof)
   module(getMovement; line; curMovement)
   movement = curMovement
-  modelMen[NB_VAR_MAX] = {0} // tableau de somme des valeurs existantes par VAR pour un homme
-  nbModelMen[NB_VAR_MAX] = {0} //  tableau de nombre de valeur par VAR pour un homme
-  modelWomen[NB_VAR_MAX] = {0} //  tableau de somme des valeurs existantes par VAR pour une femme
-  nbModelWomen[NB_VAR_MAX] = {0} //  tableau de nombre de valeur par VAR pour une femme
+  // tableau de somme des valeurs existantes par VAR pour un homme
+  modelMen[NB_VAR_MAX] = {0} 
+  //  tableau de nombre de valeur par VAR pour un homme
+  nbModelMen[NB_VAR_MAX] = {0}
+  //  tableau de somme des valeurs existantes par VAR pour une femme
+  modelWomen[NB_VAR_MAX] = {0}
+  //  tableau de nombre de valeur par VAR pour une femme
+  nbModelWomen[NB_VAR_MAX] = {0} 
   
   do while(!eof(fiTrain) && movement == curMovement)
     module(getGender; line; gender)
 
     if (gender == MALE)
-      module(readLine; line, modelMen,nbModelMen;modelMen,nbModelMen)
+      module(processLine; line, modelMen,nbModelMen;modelMen,nbModelMen)
     else
-      module(readLine; line, modelWomen,nbModelWomen;modelWomen,nbModelWomen)
+      module(processLine; line, modelWomen,nbModelWomen;modelWomen,nbModelWomen)
     endif
     
     module(getLine; fiTrain; line)
@@ -47,8 +51,8 @@ module(closeFile;fiModel;)
 module(closeFile;fiMenModel;)
 module(closeFile;fiWomenModel;)
 ----
-
-module(writeFile; modelMen, nbModelMen, modelWomen, nbModelWomen, movement, fiModel, fiMenModel, fiWomenModel)
+// les fichiers fiModel, fiMenModel et fiWomenModel sont aussi envoyé
+module(writeFile; modelMen, nbModelMen, modelWomen, nbModelWomen, movement)
 ---*
 
 module(writeMovement; fiModel, movement;)
@@ -71,7 +75,7 @@ enddo
 
 ----
 
-module(readLine; line, tab, nbTab;tab, nbTab)
+module(processLine; line, tab, nbTab;tab, nbTab)
 // tab = tableau de la somme des valeurs existantes par VAR
 // nbTab = tableau du nombre de valeurs par VAR
 ---*
