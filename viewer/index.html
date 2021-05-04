@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Model Viewer</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js" integrity="sha256-uVEHWRIr846/vAdLJeybWxjPNStREzOlqLMXjW/Saeo=" crossorigin="anonymous"></script>
+</head>
+<body>
+  <input type="file" id="csv" accept=".csv" style="display: none" onchange="handleFiles(this.files)">
+  <button onclick="loadFile()">Load CSV File</button>
+  <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+    <canvas id="chart"></canvas>
+</div>
+
+<script>
+  const labels = [];
+  const ctx = document.getElementById('chart').getContext('2d');
+  const myChart = new Chart(ctx, {
+    height: 400,
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: []
+      },
+      options: {
+        // animations: {
+        //   tension: {
+        //     duration: 1000,
+        //     easing: 'linear',
+        //     from: 1,
+        //     to: 0,
+        //     loop: true
+        //   }
+        // },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+  });
+  for(let i = 0; i < 60; i++) {
+    labels.push(i);
+  }
+
+const movements = {
+  1: "Downstairs", 2: "Upstairs", 3: "Jogging", 4: "Sitting", 5: "Stand up", 6: "Walking",
+}
+function getMovement(movement) {
+  return `${movements[movement] ?? movement}`
+}
+
+function parseData(data) {
+  let datasets = [];
+  data = data.toString().split("\r\n");
+  data.shift();
+  data.pop();
+  data.forEach(line => {
+    const arr = line.split(",")
+    const movement = arr.shift();
+    console.log(movement);
+    const dataset = {
+      label: getMovement(movement),
+      data: arr.filter((_,index) => index % 10 == 0).map(info => parseFloat(info)),
+      borderWidth: 1,
+      borderColor: randomColor(),
+    }
+    datasets.push(dataset)
+  })
+  return datasets;
+}
+
+function loadFile() {
+  document.getElementById("csv").click();
+}
+
+function handleFiles(files) {
+  const reader = new FileReader();
+  reader.onload = async e => {
+    myChart.data.datasets = parseData(reader.result);
+    myChart.update();
+  }
+  reader.readAsText(files[0])
+}
+
+function randomColor() {
+  return `rgb(${randomInt()}, ${randomInt()}, ${randomInt()},1)`
+}
+
+function randomInt(min= 0, max= 255) {
+  return Math.floor(Math.random() * max) + min; 
+}
+
+  
+</script>
+
+</body>
+</html>
