@@ -1,0 +1,109 @@
+struct model
+{
+	int movement;
+	double vAccs[NBTEMPS];
+};
+
+NB_MODELS = 6
+NB_VAR_MAX = 600
+LINE_LENGTH_MAX = 8000
+
+---*
+pFiModel = ouvrir "models.csv" en lecture
+pFiTest = ouvrir "testSet.csv" en lecture
+
+if (pFiModel && pFiTest)
+  module(convertFileToTable; pFiModel; models // models tableau de structure)
+
+  module(findBestModels; models, pFiTest;estimateClasses, realClasses, nbTests)
+
+  module(displayResultsForEachClass; realClasses, estimateClasses, nbTests)
+  module(displayAccuracy; realClasses, estimateClass, nbTests)
+  module(displayClass; realClasses, estimateClass; nbTests)
+
+else
+  Sortir Erreur ouverture fichier
+  fermer pFiModel si ouvert
+endif
+----
+
+
+module(findBestModels; models, pFiTest; estimateClasses, realClasses, nbTests)
+---*
+  estimateClasses = []
+  realClasses = []
+  nbTests = 0
+
+  // remove header
+  module(getLine; pFiTest; line )
+
+  module(getLine; pFiTest; line)
+  do while (!eof(pFiTest))
+    module(getMovement; line; movement)
+    closestDistance = MAX_VALUE
+    bestMovement = -1
+    module(extractVAcc; line, 4; vAccs, nbVAccs)
+    iModel = 0
+    do while (iModel < NB_MODELS)
+      module(getDistance; models[iModel].vAccs, vAccs, nbVAccs; distance)
+      if (distance < closestDistance)
+        closestDistance = distance
+        bestMovement = models[iModel].movement
+      endif
+      iModel++
+    enddo
+    estimateClasses[nbTests] = bestMovement
+    realClasses[nbTests] = movement
+    module(getLine; pFiTest; line)
+    nbTests++
+  enddo
+
+----
+
+module(getDistance; modelVAccs, vAccs, nbVAccs; distance)
+---*
+  distance = 0 //double
+
+  iVector = 0
+  do while(iVector < nbVAccs)
+    distance += pow(vAccs[iVector] - modelVAccs[iVector], 2);
+
+    iVector++
+  enddo
+
+  distance = sqrt(distance)
+----
+
+module(convertFileToTable; pFiModel; models)
+---*
+  models = []
+  nbModels = 0
+  // remove header
+  module(getLine; pFiModel; line )
+
+  module(getLine; pFiModel; line)
+  do while (!eof(pFiModel))
+    module(getMovement; line; movement)
+    module(extractVAcc; line, 2; vAccs, nbVAccs)
+    model.movement = movement
+    model.vAccs = vAccs
+    models[nbModels] = model
+
+    nbModels++
+
+    module(getLine; pFiModel; line)
+  enddo
+----
+
+module(extractVAcc; line, startColumn; vAccs, nbVAccs)
+---*
+  nbVAccs = 0;
+  do
+    module(getField;line, startColumn + nbVAccs; vAcc)
+    if (!isnan(vAcc))
+      vAccs[nbVAccs] = vAcc;
+      nbVAccs++;
+    endif
+  enddo while (nbVAccs < NB_VAR_MAX && !isnan(vAcc));
+  return nbVAccs;
+----

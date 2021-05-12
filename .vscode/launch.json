@@ -12,7 +12,7 @@
       "args": [],
       "stopAtEntry": false,
       // "cwd": "${workspaceFolder}",
-      "cwd": "${fileDirname}/Debug",
+      "cwd": "${fileDirname}",
       "environment": [],
       "console": "integratedTerminal",
       "preLaunchTask": "C/C++: cl.exe générer le fichier actif"
