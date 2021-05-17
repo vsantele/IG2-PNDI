@@ -21,6 +21,8 @@ if (pFiModel && pFiTest)
   module(displayAccuracy; realClasses, estimateClass, nbTests)
   module(displayClass; realClasses, estimateClass; nbTests)
 
+  fermer pFiModel
+  fermer pFiTest
 else
   Sortir Erreur ouverture fichier
   fermer pFiModel si ouvert
