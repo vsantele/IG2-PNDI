@@ -2,56 +2,37 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include "../headers/library.h"
 
-#define ROOT_FOLDER "../../out"
-#define DATA_FOLDER "data"
-#define MODEL_FOLDER "model"
-#define FI_MODEL_FILENAME "models.csv"
-#define FI_MODEL_MEN_FILENAME "modelsMen.csv"
-#define FI_MODEL_WOMEN_FILENAME "modelsWomen.csv"
-#define FI_TRAIN_FILENAME "trainSet.csv"
-#define NB_VAR_MAX 600
+#define MOVEMENT_FIELD 1
 
-#define LINE_LENGTH_MAX 8000
 
 typedef enum gender Gender;
 enum gender {WOMAN, MAN};
 
-errno_t createModel();
+errno_t createModels();
 void writeHeader(FILE* file);
 void removeHeader(FILE* file);
-double getField(char line[], int num);
 Gender getGender(char line[]);
-int getMovement(char line[]);
 void processLine(char line[], double tab[], int nbTab[]);
 void writeFile(FILE *fiModel, FILE *fiMenModel, FILE *fiWomenModel, double modelMen[], int nbModelMen[], double modelWomen[], int nbModelWomen[], int movement);
 
-void main(void)
-{
-  errno_t err = createModel();
-  if (err != 0) {
-    printf("Erreur... %d", err);
-  } else {
-    printf("OK");
-  }
-}
-
-errno_t createModel() {
+errno_t createModels() {
   FILE* fiTrain = NULL;
   FILE* fiModel = NULL;
 
   FILE* fiMenModel = NULL;
   FILE* fiWomenModel = NULL;
 
-  char path[512];
-  sprintf_s(path, 512, "%s/%s/%s", ROOT_FOLDER, DATA_FOLDER, FI_TRAIN_FILENAME);
+  char path[PATH_LENGTH];
+  sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TRAIN_FILENAME);
   errno_t err = fopen_s(&fiTrain, path, "r");
 
   if(fiTrain == NULL){
     printf("Erreur ouverture %s, code : %d\n",path, err);
     return err;
   }
-  sprintf_s(path, 512, "%s/%s/%s", ROOT_FOLDER, MODEL_FOLDER, FI_MODEL_FILENAME);
+  sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, MODEL_FOLDER, MODEL_FILENAME);
   err = fopen_s(&fiModel, path, "w");
 
   if(fiModel == NULL){
@@ -60,7 +41,7 @@ errno_t createModel() {
     return err;
   }
 
-  sprintf_s(path, 512, "%s/%s/%s", ROOT_FOLDER, MODEL_FOLDER, FI_MODEL_MEN_FILENAME);
+  sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, MODEL_FOLDER, MODEL_MEN_FILENAME);
   err = fopen_s(&fiMenModel, path, "w");
 
   if(fiMenModel == NULL){
@@ -70,7 +51,7 @@ errno_t createModel() {
     return err;
   }
 
-  sprintf_s(path, 512, "%s/%s/%s", ROOT_FOLDER, MODEL_FOLDER, FI_MODEL_WOMEN_FILENAME);
+  sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, MODEL_FOLDER, MODEL_WOMEN_FILENAME);
   err = fopen_s(&fiWomenModel, path, "w");
 
   if(fiWomenModel == NULL){
@@ -83,16 +64,14 @@ errno_t createModel() {
   writeHeader(fiModel);
   writeHeader(fiMenModel);
   writeHeader(fiWomenModel);
-  printf("Header ecrits\n");
-
   removeHeader(fiTrain);
 
   char line[LINE_LENGTH_MAX];
   fgets(line, LINE_LENGTH_MAX, fiTrain);
   while (!feof(fiTrain)) {
-    int curMovement = getMovement(line);
+    int curMovement = (int) getField(line, MOVEMENT_FIELD);
     int movement = curMovement;
-    printf("curMovement: %d\n", curMovement);
+    printf("Traitement du mouvement: %d\n", curMovement);
     // tableau de somme des valeurs existantes par VAR pour un homme
     double modelMen[NB_VAR_MAX] = {0};
     //  tableau de nombre de valeur par VAR pour un homme
@@ -112,7 +91,7 @@ errno_t createModel() {
       }
 
       fgets(line, LINE_LENGTH_MAX, fiTrain);
-      curMovement = getMovement(line);
+      curMovement = (int) getField(line, MOVEMENT_FIELD);
     }
     writeFile(fiModel, fiMenModel, fiWomenModel, modelMen, nbModelMen, modelWomen, nbModelWomen, movement);
   }
@@ -147,31 +126,11 @@ void removeHeader(FILE* file) {
   fgets(line, LINE_LENGTH_MAX, file);
 }
 
-double getField(char line[], int num)
-{
-  char lineCpy[LINE_LENGTH_MAX];
-  strcpy_s(lineCpy, LINE_LENGTH_MAX, line);
-  const char *tok;
-  char *nextToken;
-  for (tok = strtok_s(lineCpy, ",", &nextToken);
-        tok && *tok;
-        tok = strtok_s(NULL, ",\n", &nextToken))
-  {
-    if (!--num)
-      return atof(tok);
-  }
-  return NAN;
-}
-
-int getMovement(char line[]) {
-  return (int) getField(line, 1);
-}
-
 void processLine(char line[], double tab[], int nbTab[])
 {
   int iValue = 0;
   double value = getField(line, iValue + 4);
-  while (!isnan(value))
+  while ( iValue < NB_VAR_MAX && !isnan(value))
   {
     tab[iValue] += value;
     nbTab[iValue]++;

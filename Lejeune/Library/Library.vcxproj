@@ -139,16 +139,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="extractData.c" />
-    <ClCompile Include="main.c" />
-    <ClCompile Include="phase2.c" />
-    <ClCompile Include="phase3.c" />
-    <ClCompile Include="stat.c" />
-    <ClCompile Include="utils.c" />
+    <ClCompile Include="sources/extractData.c" />
+    <ClCompile Include="sources/main.c" />
+    <ClCompile Include="sources/phase2.c" />
+    <ClCompile Include="sources/phase3.c" />
+    <ClCompile Include="sources/classificationStatistics.c" />
+    <ClCompile Include="sources/utils.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="library.h" />
-    <ClInclude Include="stat.h" />
+    <ClInclude Include="headers/library.h" />
+    <ClInclude Include="headers/classificationStatistics.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

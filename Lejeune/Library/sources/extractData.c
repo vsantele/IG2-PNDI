@@ -4,23 +4,16 @@
 #include <string.h>
 #include <time.h>
 #include <math.h>
-#include "library.h"
+#include "../headers/library.h"
 
-#define LINES_COUNT 600
-#define DATA_SUBJECT_INFO_FILENAME "../../TDD2021/data_subjects_info.csv"
-#define TEST_OUTPUT_FILENAME "../../out/data/testSet.csv"
-#define TRAIN_OUTPUT_FILENAME "../../out/data/trainSet.csv"
-#define ROOT_DATA_PATH "../../TDD2021"
-#define ROOT_OUT_PATH "../../out"
+#define SUBJECT_INFO_FILENAME "data_subjects_info.csv"
 #define FOLDER_NAME_LENGTH 16
-#define NB_USERS 24
+
 #define NB_FOLDERS 15
 #define MVT_LENGTH 4
 #define PATH_LENGTH 128
 #define NB_MOVEMENTS 6
-#define ACC_X_NUM_FIELD 11
-#define ACC_Y_NUM_FIELD 12
-#define ACC_Z_NUM_FIELD 13
+
 char folderNames[][FOLDER_NAME_LENGTH] = { "dws_1", "dws_11", "dws_2", "jog_16", "jog_9", "sit_13", "sit_5", "std_14", "std_6", "ups_12", "ups_3", "ups_4", "wlk_15", "wlk_7", "wlk_8" };
 char movements[][MVT_LENGTH] = {"dws", "ups", "jog", "sit", "std", "wlk"};
 
@@ -28,18 +21,12 @@ errno_t extractData();
 void createHeader(FILE* file);
 errno_t readUsersGender(int usersGender[]);
 int getMovement(char folderName[]);
-int getGender(int userCode, int users[]);
+int getGenderFromUsers(int userCode, int users[]);
 FILE * getRandomWriteFile(FILE *testFile, FILE *trainFile);
-void processFile(char fileName[], FILE* outputData, char movement[], int id, int gender);
 double getAccVector(char line[]);
 void writeVector(double vector, FILE* outputData);
-double getField(char* line, int num);
 errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender);
 
-void main(void)
-{
-  extractData();
-}
 
 errno_t extractData() {
   srand(time(NULL));
@@ -47,19 +34,23 @@ errno_t extractData() {
   FILE* fiTrainData = NULL;
   int usersGender[NB_USERS];
   errno_t err;
+  char path[PATH_LENGTH];
   errno_t errReadUsersGender = readUsersGender(usersGender);
   if (errReadUsersGender != 0)
     return errReadUsersGender;
 
-  err = fopen_s(&fiTestData, TEST_OUTPUT_FILENAME, "w+");
+  sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TEST_FILENAME);
+  err = fopen_s(&fiTestData, path, "w+");
   if (fiTestData == NULL) {
-    printf("Erreur lors de l'ouverture du fichier %s : %d", TEST_OUTPUT_FILENAME, err);
+    printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
     return err;
   }
-  err = fopen_s(&fiTrainData, TRAIN_OUTPUT_FILENAME, "w+");
+
+  sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TRAIN_FILENAME);
+  err = fopen_s(&fiTrainData, path, "w+");
   if (fiTrainData == NULL)
   {
-    printf("Erreur lors de l'ouverture du fichier %s : %d", TRAIN_OUTPUT_FILENAME, err);
+    printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
     fclose(fiTestData);
     return err;
   }
@@ -72,13 +63,19 @@ errno_t extractData() {
     int idMovement = getMovement(folderNames[iFolder]);
     if(idMovement != NB_MOVEMENTS+1){
       for (int iFile = 0; iFile < NB_USERS; iFile++) {
+        //if ((iFile * iFolder) % 10 == 0) printf(".");
         char path[PATH_LENGTH];
         int userCode = iFile + 1;
-        int gender = getGender(userCode, usersGender);
+        int gender = getGenderFromUsers(userCode, usersGender);
         sprintf_s(path, PATH_LENGTH, "%s/%s/sub_%d.csv", ROOT_DATA_PATH, folderNames[iFolder], userCode);
         FILE *fiOut = getRandomWriteFile(fiTestData, fiTrainData);
-        int err = readFile(path, fiOut, userCode, idMovement, gender );
+        err = readFile(path, fiOut, userCode, idMovement, gender );
+        if (err != 0) {
+          printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
+          return err;
+        }
       }
+      printf(".");
     }
   }
 
@@ -90,9 +87,9 @@ errno_t extractData() {
 
 void createHeader(FILE* file) {
   fprintf_s(file, "movement,gender,id,");
-  for (int i = 0; i < LINES_COUNT; i++)
+  for (int i = 0; i < NB_VAR_MAX; i++)
   {
-    if (i < LINES_COUNT - 1)
+    if (i < NB_VAR_MAX - 1)
     {
       fprintf_s(file, "VAR %d,", i);
     }
@@ -104,28 +101,14 @@ void createHeader(FILE* file) {
   fprintf_s(file, "\n");
 }
 
-double getField(char line[], int num)
-{
- char lineCpy[1024];
- strcpy_s(lineCpy, 1024, line);
- const char* tok;
- char* nextToken;
- for (tok = strtok_s(lineCpy, ",", &nextToken);
-   tok && *tok;
-   tok = strtok_s(NULL, ",\n", &nextToken))
- {
-   if (!--num)
-     return atof(tok);
- }
- return -1;
-}
-
 errno_t readUsersGender(int usersGender[])
 { // fonctionne
   FILE* fiDataSubjectInfos = NULL;
-  errno_t err = fopen_s(&fiDataSubjectInfos, DATA_SUBJECT_INFO_FILENAME, "r");
+  char path[PATH_LENGTH];
+  sprintf_s(path, PATH_LENGTH, "%s/%s", ROOT_DATA_PATH, SUBJECT_INFO_FILENAME);
+  errno_t err = fopen_s(&fiDataSubjectInfos, path, "r");
   if (fiDataSubjectInfos == NULL) {
-    printf("Erreur lors de l'ouverture du fichier %s : %d", DATA_SUBJECT_INFO_FILENAME, err);
+    printf("Erreur lors de l'ouverture du fichier %s : %d", path, err);
     return err;
   }
   int iUser = 0;
@@ -149,7 +132,7 @@ int getMovement(char folderName[]) {
   return iMovement+1;
 }
 
-int getGender(int userCode, int users[]) {
+int getGenderFromUsers(int userCode, int users[]) {
   return users[userCode - 1];
 }
 
@@ -166,13 +149,14 @@ errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
   fgets(line, 256, fiIn); // remove header
   int nLines = 0;
   fprintf_s(fiOut, "%d,%d,%d", movement, gender, userId);
-  while (!feof(fiIn) > 0 && nLines < LINES_COUNT) {
+  while (!feof(fiIn) > 0 && nLines < NB_VAR_MAX) {
     fgets(line, 256, fiIn);
     double accVec = getAccVector(line);
     writeVector(accVec, fiOut);
     nLines++;
   }
   fprintf_s(fiOut, "\n");
+  fclose(fiIn);
   return 0;
 }
 

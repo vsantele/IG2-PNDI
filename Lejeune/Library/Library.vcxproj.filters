@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stat.c">
+    <ClCompile Include="classificationStatistics.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="extractData.c">
@@ -35,7 +35,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stat.h">
+    <ClInclude Include="classificationStatistics.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="library.h">

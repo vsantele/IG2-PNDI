@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdbool.h>
 #include<malloc.h>
-#include "./stat.h"
+#include "../headers/classificationStatistics.h"
 
 typedef struct resultClass ResultClass;
 struct resultClass {
@@ -25,28 +25,15 @@ ResultClass* searchClass(int numClass, ResultClass* pFirstResult);
 int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]);
 int sumElements(int tab[], int taille);
 
-//int main(void)
-//{
-//	int realClasses[] = { 5, 2, 5, 3, 5, 3, 2, 4 };
-//	int estimateClasses[] = { 5, 5, 1, 2, 1, 3, 2, 4 };
-//	int nbTests = 8;
-//
-//	displayAccuracy(realClasses, estimateClasses, nbTests);
-//
-//	displayResultForEachClass(realClasses, estimateClasses, nbTests);
-//
-//	displayClass(realClasses, estimateClasses, nbTests);
-//	return 0;
-//}
-
 void displayResultForEachClass(int realClasses[], int estimateClasses[], int nbTests)
 {
 	ResultClass* pFirstResults = resultsForEachClass(realClasses, estimateClasses, nbTests);
 
 	ResultClass* pResult = pFirstResults;
 
-	while (pResult != NULL) {
-		printf("Classe %d | Bien classe : %d | Total : %d |Pourcentage : %.2f%%\n", pResult->numClass, pResult->nbCorrect, pResult->nbTotal, toPercent(ratio(pResult->nbCorrect, pResult->nbTotal)));
+	while (pResult != NULL) 
+	{
+		printf("Classe %2d | Bien classe : %2d | Total : %2d |Pourcentage : %.2f%%\n", pResult->numClass, pResult->nbCorrect, pResult->nbTotal, toPercent(ratio(pResult->nbCorrect, pResult->nbTotal)));
 
 		pResult = pResult->pSuiv;
 	}
@@ -54,11 +41,13 @@ void displayResultForEachClass(int realClasses[], int estimateClasses[], int nbT
 	freeResultClassLinkedList(pFirstResults);
 }
 
-void displayAccuracy(int realClasses[], int estimateClasses[], int nbTests) {
+void displayAccuracy(int realClasses[], int estimateClasses[], int nbTests) 
+{
 	printf("L accuracy est de %.2f%%\n", toPercent(accuracy(realClasses, estimateClasses, nbTests)));
 }
 
-ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests) {
+ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int nbTests) 
+{
 	ResultClass* pFirstResults = NULL;
 
 	for (int iClass = 0; iClass < nbTests; iClass++) {
@@ -111,11 +100,12 @@ double accuracy(int realClasses[], int estimateClasses[], int nbTests) {
 
 ResultClass* createClass(int numClass) {
 	ResultClass* pNewClass = (ResultClass*)malloc(sizeof(ResultClass));
-	pNewClass->nbCorrect = 0;
-	pNewClass->nbTotal = 0;
-	pNewClass->numClass = numClass;
-	pNewClass->pSuiv = NULL;
-
+	if (pNewClass != NULL) {
+		pNewClass->nbCorrect = 0;
+		pNewClass->nbTotal = 0;
+		pNewClass->numClass = numClass;
+		pNewClass->pSuiv = NULL;
+	}
 	return pNewClass;
 }
 
