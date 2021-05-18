@@ -26,7 +26,6 @@
 
   // Utils
   double getField(char line[], int num);
-  double getField2(char line[], int num);
 
   // Phase 1
   errno_t extractData();
