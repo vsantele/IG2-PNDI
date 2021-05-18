@@ -50,19 +50,23 @@ ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int n
 {
 	ResultClass* pFirstResults = NULL;
 
-	for (int iClass = 0; iClass < nbTests; iClass++) {
+	for (int iClass = 0; iClass < nbTests; iClass++) 
+	{
 		ResultClass* searchedClass = searchClass(realClasses[iClass], pFirstResults);
 
-		if (searchedClass == NULL) { // Liste est vide
+		if (searchedClass == NULL) 
+		{ // Liste est vide
 			pFirstResults = createClass(realClasses[iClass]);
 			searchedClass = pFirstResults;
 		}
-		else if (searchedClass->numClass != realClasses[iClass]) { // Classe cherch�e n'est pas dans la liste
+		else if (searchedClass->numClass != realClasses[iClass]) 
+		{ // Classe cherch�e n'est pas dans la liste
 			searchedClass->pSuiv = createClass(realClasses[iClass]);
 			searchedClass = searchedClass->pSuiv;
 		}
 
-		if (correctEstimation(realClasses[iClass], estimateClasses[iClass])) {
+		if (correctEstimation(realClasses[iClass], estimateClasses[iClass])) 
+		{
 			searchedClass->nbCorrect++;
 		}
 
@@ -72,25 +76,31 @@ ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int n
 	return pFirstResults;
 }
 
-ResultClass* searchClass(int numClass, ResultClass* pFirstResult) {
-	if (pFirstResult == NULL) { // liste chain�e est vide
+ResultClass* searchClass(int numClass, ResultClass* pFirstResult) 
+{
+	if (pFirstResult == NULL) // liste chainée est vide
+	{ 
 		return NULL;
 	}
 
 	ResultClass* pResult = pFirstResult;
 
-	while (pResult->numClass != numClass && pResult->pSuiv != NULL) {
+	while (pResult->numClass != numClass && pResult->pSuiv != NULL) 
+	{
 		pResult = pResult->pSuiv;
 	}
 
 	return pResult;
 }
 
-double accuracy(int realClasses[], int estimateClasses[], int nbTests) {
+double accuracy(int realClasses[], int estimateClasses[], int nbTests) 
+{
 	int correctEstimationCounter = 0;
 
-	for (int iClass = 0; iClass < nbTests; iClass++) {
-		if (correctEstimation(realClasses[iClass], estimateClasses[iClass])) {
+	for (int iClass = 0; iClass < nbTests; iClass++) 
+	{
+		if (correctEstimation(realClasses[iClass], estimateClasses[iClass])) 
+		{
 			correctEstimationCounter++;
 		}
 	}
@@ -98,9 +108,11 @@ double accuracy(int realClasses[], int estimateClasses[], int nbTests) {
 	return (double)correctEstimationCounter / nbTests;
 }
 
-ResultClass* createClass(int numClass) {
+ResultClass* createClass(int numClass) 
+{
 	ResultClass* pNewClass = (ResultClass*)malloc(sizeof(ResultClass));
-	if (pNewClass != NULL) {
+	if (pNewClass != NULL) 
+	{
 		pNewClass->nbCorrect = 0;
 		pNewClass->nbTotal = 0;
 		pNewClass->numClass = numClass;
@@ -109,16 +121,19 @@ ResultClass* createClass(int numClass) {
 	return pNewClass;
 }
 
-double toPercent(double ratio) {
+double toPercent(double ratio) 
+{
 	return ratio * 100.0;
 }
 
-double ratio(int num, int den) {
+double ratio(int num, int den) 
+{
 	if (den == 0) return 0;
 	return (double)num / den;
 }
 
-bool correctEstimation(int real, int estimation) {
+bool correctEstimation(int real, int estimation)
+{
 	return real == estimation;
 }
 
@@ -126,7 +141,8 @@ void freeResultClassLinkedList(ResultClass* pFirstResult)
 {
 	ResultClass* pClass = pFirstResult;
 
-	while (pClass != NULL) {
+	while (pClass != NULL) 
+	{
 		ResultClass* pClassNext = pClass->pSuiv;
 		free(pClass);
 
@@ -134,11 +150,14 @@ void freeResultClassLinkedList(ResultClass* pFirstResult)
 	}
 }
 
-int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]) {
+int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX]) 
+{
 	int nbMax = 0;
 
-	for (int i = 0; i < nbTests; i++) {
-		if (nbMax < realClasses[i]) {
+	for (int i = 0; i < nbTests; i++) 
+	{
+		if (nbMax < realClasses[i]) 
+		{
 			nbMax = realClasses[i];
 		}
 		if (nbMax < estimateClasses[i])
@@ -150,12 +169,14 @@ int statsClass(int realClasses[], int estimateClasses[], int nbTests, int tabSta
 	return nbMax;
 }
 
-void displayClass(int realClasses[], int estimateClasses[], int nbTests) {
+void displayClass(int realClasses[], int estimateClasses[], int nbTests) 
+{
 	int tabStats[NB_CLASSES_MAX][NB_CLASSES_MAX] = { 0 };
 	int nbMax = statsClass(realClasses, estimateClasses, nbTests, tabStats);
 
 	printf("\tA classer\t|");
-	for (int i = 0; i < nbMax; i++) {
+	for (int i = 0; i < nbMax; i++) 
+	{
 		printf("%d\t", i + 1);
 	}
 	printf("\n");
@@ -181,7 +202,8 @@ void displayClass(int realClasses[], int estimateClasses[], int nbTests) {
 int sumElements(int tab[], int taille)
 {
 	int sum = 0;
-	for (int i = 0; i < taille; i++) {
+	for (int i = 0; i < taille; i++) 
+	{
 		sum += tab[i];
 	}
 	return sum;

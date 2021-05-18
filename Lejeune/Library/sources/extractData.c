@@ -28,7 +28,8 @@ void writeVector(double vector, FILE* outputData);
 errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender);
 
 
-errno_t extractData() {
+errno_t extractData() 
+{
   srand(time(NULL));
   FILE* fiTestData = NULL;
   FILE* fiTrainData = NULL;
@@ -41,7 +42,8 @@ errno_t extractData() {
 
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TEST_FILENAME);
   err = fopen_s(&fiTestData, path, "w+");
-  if (fiTestData == NULL) {
+  if (fiTestData == NULL) 
+  {
     printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
     return err;
   }
@@ -61,8 +63,10 @@ errno_t extractData() {
   for (int iFolder = 0; iFolder < NB_FOLDERS; iFolder++)
   {
     int idMovement = getMovement(folderNames[iFolder]);
-    if(idMovement != NB_MOVEMENTS+1){
-      for (int iFile = 0; iFile < NB_USERS; iFile++) {
+    if(idMovement != NB_MOVEMENTS+1)
+    {
+      for (int iFile = 0; iFile < NB_USERS; iFile++) 
+      {
         //if ((iFile * iFolder) % 10 == 0) printf(".");
         char path[PATH_LENGTH];
         int userCode = iFile + 1;
@@ -70,7 +74,8 @@ errno_t extractData() {
         sprintf_s(path, PATH_LENGTH, "%s/%s/sub_%d.csv", ROOT_DATA_PATH, folderNames[iFolder], userCode);
         FILE *fiOut = getRandomWriteFile(fiTestData, fiTrainData);
         err = readFile(path, fiOut, userCode, idMovement, gender );
-        if (err != 0) {
+        if (err != 0) 
+        {
           printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
           return err;
         }
@@ -85,7 +90,8 @@ errno_t extractData() {
   return 0;
 }
 
-void createHeader(FILE* file) {
+void createHeader(FILE* file) 
+{
   fprintf_s(file, "movement,gender,id,");
   for (int i = 0; i < NB_VAR_MAX; i++)
   {
@@ -107,14 +113,16 @@ errno_t readUsersGender(int usersGender[])
   char path[PATH_LENGTH];
   sprintf_s(path, PATH_LENGTH, "%s/%s", ROOT_DATA_PATH, SUBJECT_INFO_FILENAME);
   errno_t err = fopen_s(&fiDataSubjectInfos, path, "r");
-  if (fiDataSubjectInfos == NULL) {
+  if (fiDataSubjectInfos == NULL)
+  {
     printf("Erreur lors de l'ouverture du fichier %s : %d", path, err);
     return err;
   }
   int iUser = 0;
   char line[64];
   fgets(line, 64, fiDataSubjectInfos); // Remove header
-  for (int iUser = 0; iUser < NB_USERS; iUser++) {
+  for (int iUser = 0; iUser < NB_USERS; iUser++) 
+  {
     fgets(line, 64, fiDataSubjectInfos);
     usersGender[iUser] = (int)getField(line, 5);
   }
@@ -122,17 +130,20 @@ errno_t readUsersGender(int usersGender[])
   return 0;
 }
 
-int getMovement(char folderName[]) {
+int getMovement(char folderName[]) 
+{
   char movement[MVT_LENGTH];
   strncpy_s(movement, MVT_LENGTH, folderName, 3);
   int iMovement = 0;
-  while(iMovement < NB_MOVEMENTS && strcmp(movement,movements[iMovement]) != 0){
+  while(iMovement < NB_MOVEMENTS && strcmp(movement,movements[iMovement]) != 0)
+  {
     iMovement++;
   }
   return iMovement+1;
 }
 
-int getGenderFromUsers(int userCode, int users[]) {
+int getGenderFromUsers(int userCode, int users[]) 
+{
   return users[userCode - 1];
 }
 
@@ -149,7 +160,8 @@ errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
   fgets(line, 256, fiIn); // remove header
   int nLines = 0;
   fprintf_s(fiOut, "%d,%d,%d", movement, gender, userId);
-  while (!feof(fiIn) > 0 && nLines < NB_VAR_MAX) {
+  while (!feof(fiIn) > 0 && nLines < NB_VAR_MAX) 
+  {
     fgets(line, 256, fiIn);
     double accVec = getAccVector(line);
     writeVector(accVec, fiOut);
@@ -162,13 +174,15 @@ errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
 
 FILE *getRandomWriteFile( FILE *testFile, FILE *trainFile)
 {
-  if (rand() % 100 < 10) {
+  if (rand() % 100 < 10) 
+  {
     return testFile;
   }
   return trainFile;
 }
 
-double getAccVector(char line[]) {
+double getAccVector(char line[]) 
+{
   double accX, accY, accZ;
   accX = getField(line, ACC_X_NUM_FIELD);
   accY = getField(line, ACC_Y_NUM_FIELD);
@@ -177,6 +191,7 @@ double getAccVector(char line[]) {
   return sqrt(accX * accX + accY * accY + accZ * accZ);
 }
 
-void writeVector(double vector, FILE *outputData) {
+void writeVector(double vector, FILE *outputData) 
+{
   fprintf_s(outputData, ",%f", vector);
 }

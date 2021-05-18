@@ -70,9 +70,11 @@ int findBestModels(Model models[], FILE *pFiTest, int estimateClasses[], int rea
     int bestMovement = -1;
     int nbVAccs = extractVAcc(vAccs, line, 4);
     iModel = 0;
-    while(iModel < NB_MODELS){
+    while(iModel < NB_MODELS)
+    {
         distance = getDistance(models[iModel].vAccs, vAccs, nbVAccs);
-        if(distance < closestDistance){ 
+        if(distance < closestDistance)
+        { 
             closestDistance = distance; 
             bestMovement = models[iModel].movement;
           }
@@ -86,12 +88,14 @@ int findBestModels(Model models[], FILE *pFiTest, int estimateClasses[], int rea
   return nbTests;
 }
 
-double getDistance(double modelVAccs[], double vAccs[], int nbVAccs){
+double getDistance(double modelVAccs[], double vAccs[], int nbVAccs)
+{
   double distance = 0;
 
   int iVector = 0;
 
-  while(iVector < nbVAccs){
+  while(iVector < nbVAccs)
+  {
     distance += pow(vAccs[iVector] - modelVAccs[iVector], 2);
     
     iVector++;
@@ -100,7 +104,8 @@ double getDistance(double modelVAccs[], double vAccs[], int nbVAccs){
   return sqrt(distance);
 }
 
-void convertFileToTable(FILE * pFiModel, Model models[]){
+void convertFileToTable(FILE * pFiModel, Model models[])
+{
   Model model;
   int nbModels = 0;
   char line[LINE_LENGTH_MAX];
@@ -109,7 +114,8 @@ void convertFileToTable(FILE * pFiModel, Model models[]){
 
   fgets(line, LINE_LENGTH_MAX, pFiModel);
 
-  while(!feof(pFiModel)){
+  while(!feof(pFiModel))
+  {
     model.movement = (int)getField(line, MOVEMENT_FIELD);
     extractVAcc(model.vAccs, line, 2);
 
@@ -120,14 +126,16 @@ void convertFileToTable(FILE * pFiModel, Model models[]){
   }
 }
 
-int extractVAcc(double vAccs[], char line[], int startColumn) {
+int extractVAcc(double vAccs[], char line[], int startColumn) 
+{
   int nbVAccs = 0;
   double vAcc;
 
   do
   {
     vAcc = getField(line, startColumn + nbVAccs);
-    if (!isnan(vAcc)) {
+    if (!isnan(vAcc)) 
+    {
       vAccs[nbVAccs] = vAcc;
       nbVAccs++;
     }

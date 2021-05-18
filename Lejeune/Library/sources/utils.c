@@ -15,7 +15,8 @@
 //     tok && *tok;
 //     tok = strtok_s(NULL, ",\n", &nextToken))
 //   {
-//     if (!--num) {
+//     if (!--num) 
+//     {
 //       return atof(tok);
 //     }
 //   }
@@ -27,14 +28,16 @@ double getField(char line[], int num)
 {
   int nbComma = 0;
   int iChar = 0;
-  while (line[iChar] != '\0' && nbComma < num - 1) {
+  while (line[iChar] != '\0' && nbComma < num - 1) 
+  {
     if (line[iChar] == ',') nbComma++;
     iChar++;
   }
   if (line[iChar] == '\0') return NAN;
   char field[128];
   int size = 0;
-  while (line[iChar + size] != '\0' && line[iChar + size] != ',') {
+  while (line[iChar + size] != '\0' && line[iChar + size] != ',') 
+  {
     field[size] = line[iChar + size];
     size++;
   }
