@@ -17,7 +17,8 @@ Gender getGender(char line[]);
 void processLine(char line[], double tab[], int nbTab[]);
 void writeFile(FILE *fiModel, FILE *fiMenModel, FILE *fiWomenModel, double modelMen[], int nbModelMen[], double modelWomen[], int nbModelWomen[], int movement);
 
-errno_t createModels() {
+errno_t createModels() 
+{
   FILE* fiTrain = NULL;
   FILE* fiModel = NULL;
 
@@ -28,14 +29,16 @@ errno_t createModels() {
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TRAIN_FILENAME);
   errno_t err = fopen_s(&fiTrain, path, "r");
 
-  if(fiTrain == NULL){
+  if(fiTrain == NULL)
+  {
     printf("Erreur ouverture %s, code : %d\n",path, err);
     return err;
   }
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, MODEL_FOLDER, MODEL_FILENAME);
   err = fopen_s(&fiModel, path, "w");
 
-  if(fiModel == NULL){
+  if(fiModel == NULL)
+  {
     printf("Erreur ouverture %s, code : %d\n", path, err);
     fclose(fiTrain);
     return err;
@@ -44,7 +47,8 @@ errno_t createModels() {
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, MODEL_FOLDER, MODEL_MEN_FILENAME);
   err = fopen_s(&fiMenModel, path, "w");
 
-  if(fiMenModel == NULL){
+  if(fiMenModel == NULL)
+  {
     printf("Erreur ouverture %s, code : %d\n", path, err);
     fclose(fiTrain);
     fclose(fiModel);
@@ -54,7 +58,8 @@ errno_t createModels() {
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, MODEL_FOLDER, MODEL_WOMEN_FILENAME);
   err = fopen_s(&fiWomenModel, path, "w");
 
-  if(fiWomenModel == NULL){
+  if(fiWomenModel == NULL)
+  {
     fclose(fiTrain);
     fclose(fiModel);
     fclose(fiMenModel);
@@ -68,7 +73,8 @@ errno_t createModels() {
 
   char line[LINE_LENGTH_MAX];
   fgets(line, LINE_LENGTH_MAX, fiTrain);
-  while (!feof(fiTrain)) {
+  while (!feof(fiTrain)) 
+  {
     int curMovement = (int) getField(line, MOVEMENT_FIELD);
     int movement = curMovement;
     printf("Traitement du mouvement: %d\n", curMovement);
@@ -76,17 +82,20 @@ errno_t createModels() {
     double modelMen[NB_VAR_MAX] = {0};
     //  tableau de nombre de valeur par VAR pour un homme
     int nbModelMen[NB_VAR_MAX] = {0};
-  //  tableau de somme des valeurs existantes par VAR pour une femme
+    //  tableau de somme des valeurs existantes par VAR pour une femme
     double modelWomen[NB_VAR_MAX] = {0};
-  //  tableau de nombre de valeur par VAR pour une femme
+    //  tableau de nombre de valeur par VAR pour une femme
     int nbModelWomen[NB_VAR_MAX] = {0};
     
-    while (!feof(fiTrain) && movement == curMovement) {
+    while (!feof(fiTrain) && movement == curMovement) 
+    {
       Gender gender = getGender(line);
       
-      if (gender == MAN) {
+      if (gender == MAN) 
+      {
         processLine(line, modelMen, nbModelMen);
-      } else {
+      } else 
+      {
         processLine(line, modelWomen, nbModelWomen);
       }
 
@@ -104,15 +113,18 @@ errno_t createModels() {
   return 0;
 }
 
-Gender getGender(char line[LINE_LENGTH_MAX]){
+Gender getGender(char line[LINE_LENGTH_MAX])
+{
   int gender = (int)getField(line, 2);
-  if(gender == 0){
+  if(gender == 0)
+  {
     return WOMAN;
   }
   return MAN;
 }
 
-void writeHeader(FILE* file){
+void writeHeader(FILE* file)
+{
   fprintf_s(file, "movement");
   for (int i = 0; i < NB_VAR_MAX; i++)
     {
@@ -121,7 +133,8 @@ void writeHeader(FILE* file){
   fprintf_s(file, "\n");
 }
 
-void removeHeader(FILE* file) {
+void removeHeader(FILE* file) 
+{
   char line[LINE_LENGTH_MAX];
   fgets(line, LINE_LENGTH_MAX, file);
 }
@@ -146,7 +159,8 @@ void writeFile(FILE *fiModel, FILE *fiMenModel, FILE *fiWomenModel, double model
   fprintf_s(fiMenModel, "%d", movement);
   fprintf_s(fiWomenModel, "%d", movement);
 
-  for(int i = 0; i<NB_VAR_MAX; i++){
+  for(int i = 0; i<NB_VAR_MAX; i++)
+  {
     double menMean = modelMen[i] / nbModelMen[i];
     double womenMean = modelWomen[i] / nbModelWomen[i];
     double mean = (modelMen[i] + modelWomen[i]) / (nbModelMen[i] + nbModelWomen[i]);
