@@ -4,6 +4,9 @@
 #include <math.h>
 #include "../headers/library.h"
 
+#define START_VACC_MODEL 2
+#define START_VACC_TESTSET 4
+
 typedef struct model Model;
 struct model
 {
@@ -16,8 +19,8 @@ double getDistance(double modelVAccs[], double vAccs[], int nbVAccs);
 void convertFileToTable(FILE *pFiMode, Model models[]);
 int extractVAcc(double vAccs[], char line[], int startColumn);
 int findBestModels(Model models[], FILE* pFiTest, int estimateClasses[], int realClasses[]);
-void convertFileToTable(FILE* pFiModel, Model models[]);
 
+// nbTests est un pointeur car la fonction useModel retourne une erreur mais on doit connaitre le nombre de valeur dans real et estimateClasses
 errno_t useModel(int* nbTests, int realClasses[], int estimateClasses[])
 {
   FILE *pFiTest = NULL;
@@ -46,6 +49,7 @@ errno_t useModel(int* nbTests, int realClasses[], int estimateClasses[])
 
   convertFileToTable(pFiModel, models);
 
+  
   *nbTests = findBestModels(models, pFiTest, estimateClasses, realClasses);
 
   fclose(pFiTest);
@@ -68,7 +72,7 @@ int findBestModels(Model models[], FILE *pFiTest, int estimateClasses[], int rea
     int movement = (int) getField(line, MOVEMENT_FIELD);
     double closestDistance = INT_MAX;
     int bestMovement = -1;
-    int nbVAccs = extractVAcc(vAccs, line, 4);
+    int nbVAccs = extractVAcc(vAccs, line, START_VACC_TESTSET);
     iModel = 0;
     while(iModel < NB_MODELS)
     {
@@ -110,19 +114,18 @@ void convertFileToTable(FILE * pFiModel, Model models[])
   int nbModels = 0;
   char line[LINE_LENGTH_MAX];
   
-  fgets(line, LINE_LENGTH_MAX, pFiModel); // remove header
+  removeHeader(pFiModel);
+  // TODO: tester si pas eof puis get line, while, fin while get line
 
-  fgets(line, LINE_LENGTH_MAX, pFiModel);
-
-  while(!feof(pFiModel))
+  while( !feof(pFiModel) && nbModels < NB_MODELS)
   {
+    fgets(line, LINE_LENGTH_MAX, pFiModel);
     model.movement = (int)getField(line, MOVEMENT_FIELD);
-    extractVAcc(model.vAccs, line, 2);
+    extractVAcc(model.vAccs, line, START_VACC_MODEL);
 
     models[nbModels] = model;
     nbModels++;
     
-    fgets(line, LINE_LENGTH_MAX, pFiModel);
   }
 }
 
@@ -131,14 +134,23 @@ int extractVAcc(double vAccs[], char line[], int startColumn)
   int nbVAccs = 0;
   double vAcc;
 
-  do
-  {
-    vAcc = getField(line, startColumn + nbVAccs);
-    if (!isnan(vAcc)) 
-    {
+  // do
+  // {
+  //   vAcc = getField(line, startColumn + nbVAccs);
+  //   if (!isnan(vAcc)) 
+  //   {
+  //     vAccs[nbVAccs] = vAcc;
+  //     nbVAccs++;
+  //   }
+  // } while (nbVAccs < NB_VAR_MAX && !isnan(vAcc));
+
+
+  vAcc = getField(line, startColumn + nbVAccs);
+  while (nbVAccs < NB_VAR_MAX && !isnan(vAcc)){
       vAccs[nbVAccs] = vAcc;
       nbVAccs++;
-    }
-  } while (nbVAccs < NB_VAR_MAX && !isnan(vAcc));
+
+      vAcc = getField(line, startColumn + nbVAccs);
+  }
   return nbVAccs;
 }

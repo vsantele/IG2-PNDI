@@ -44,3 +44,9 @@ double getField(char line[], int num)
   field[size] = '\0';
   return atof(field);
 }
+
+void removeHeader(FILE *file)
+{
+  char line[LINE_LENGTH_MAX];
+  fgets(line, LINE_LENGTH_MAX, file);
+}

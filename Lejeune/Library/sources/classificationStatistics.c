@@ -4,7 +4,8 @@
 #include "../headers/classificationStatistics.h"
 
 typedef struct resultClass ResultClass;
-struct resultClass {
+struct resultClass 
+{
 	int numClass;
 	int nbCorrect;
 	int nbTotal;
@@ -60,7 +61,7 @@ ResultClass* resultsForEachClass(int realClasses[], int estimateClasses[], int n
 			searchedClass = pFirstResults;
 		}
 		else if (searchedClass->numClass != realClasses[iClass]) 
-		{ // Classe cherch�e n'est pas dans la liste
+		{ // Classe cherchée n'est pas dans la liste
 			searchedClass->pSuiv = createClass(realClasses[iClass]);
 			searchedClass = searchedClass->pSuiv;
 		}

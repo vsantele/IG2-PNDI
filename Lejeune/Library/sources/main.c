@@ -6,7 +6,7 @@
 #include "../headers/classificationStatistics.h"
 #include "../headers/library.h"
 
-#define NB_MAX 400
+#define NB_MAX NB_USERS * NB_FOLDERS
 
 void main(void)
 {
