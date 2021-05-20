@@ -139,7 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="sources/extractData.c" />
+    <ClCompile Include="sources/phase1.c" />
     <ClCompile Include="sources/main.c" />
     <ClCompile Include="sources/phase2.c" />
     <ClCompile Include="sources/phase3.c" />
