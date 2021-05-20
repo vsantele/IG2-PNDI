@@ -8,6 +8,8 @@
 
 #define NB_MAX NB_USERS * NB_FOLDERS
 
+void displayClassName();
+
 void main(void)
 {
   // Phase 1
@@ -34,6 +36,8 @@ void main(void)
       if (err == 0) 
       {
         printf("\n\n");
+        displayClassName();
+        printf("\n");
         printf("Statistiques: \n");
         displayResultForEachClass(realClasses, estimateClasses, nbTests);
         printf("\n");
@@ -55,5 +59,12 @@ void main(void)
   {
     printf("Erreur: %d", err);
   }
-  
+}
+
+void displayClassName() {
+  char movements[][11] = { "Downstairs", "Upstair", "Jogging", "Sitting", "Standing", "Walking" };
+  printf("Correspondance des classes : \n");
+  for (int i = 0; i < NB_MODELS; i++) {
+    printf(" - Classe %d : %s\n", i + 1, movements[i]);
+  }
 }

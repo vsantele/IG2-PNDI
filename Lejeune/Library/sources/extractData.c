@@ -7,8 +7,7 @@
 #include "../headers/library.h"
 
 
-
-char folderNames[][FOLDER_NAME_LENGTH] = { "dws_1", "dws_11", "dws_2", "jog_16", "jog_9", "sit_13", "sit_5", "std_14", "std_6", "ups_12", "ups_3", "ups_4", "wlk_15", "wlk_7", "wlk_8" };
+char folderNames[][FOLDER_NAME_LENGTH] = { "dws_1", "dws_11", "dws_2", "ups_12", "ups_3", "ups_4", "jog_16", "jog_9", "sit_13", "sit_5", "std_14", "std_6", "wlk_15", "wlk_7", "wlk_8" };
 char movements[][MVT_LENGTH] = {"dws", "ups", "jog", "sit", "std", "wlk"};
 
 errno_t extractData();
@@ -23,7 +22,7 @@ errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
 
 errno_t extractData() 
 {
-  srand(time(NULL)); // créer du vrai aléatoire
+  srand(time(NULL)); // améliore le pseudo-aléatoire
   
   FILE* fiTestData = NULL;
   FILE* fiTrainData = NULL;
@@ -87,9 +86,9 @@ errno_t extractData()
 void createHeader(FILE* file) 
 {
   fprintf_s(file, "movement,gender,id");
-  for (int i = 0; i < NB_VAR_MAX; i++)
+  for (int i = 0; i < NB_VACC_MAX; i++)
   {
-    fprintf_s(file, ",VAR %d", i);
+    fprintf_s(file, ",VACC %d", i);
   }
 }
 
@@ -147,7 +146,7 @@ errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
   int nLines = 0;
   fprintf_s(fiOut, "\n");
   fprintf_s(fiOut, "%d,%d,%d", movement, gender, userId);
-  while ( !feof(fiIn) && nLines < NB_VAR_MAX) 
+  while ( !feof(fiIn) && nLines < NB_VACC_MAX) 
   {
     fgets(line, LINE_LENGTH_MAX, fiIn);
     double accVec = getAccVector(line);

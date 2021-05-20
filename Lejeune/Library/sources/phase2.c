@@ -77,14 +77,14 @@ errno_t createModels()
     int curMovement = (int) getField(line, MOVEMENT_FIELD);
     int movement = curMovement;
     printf("Traitement du mouvement: %d\n", curMovement);
-    // tableau de somme des valeurs existantes par VAR pour un homme
-    double modelMen[NB_VAR_MAX] = {0};
-    //  tableau de nombre de valeur par VAR pour un homme
-    int nbModelMen[NB_VAR_MAX] = {0};
-    //  tableau de somme des valeurs existantes par VAR pour une femme
-    double modelWomen[NB_VAR_MAX] = {0};
-    //  tableau de nombre de valeur par VAR pour une femme
-    int nbModelWomen[NB_VAR_MAX] = {0};
+    // tableau de somme des valeurs existantes par VACC pour un homme
+    double modelMen[NB_VACC_MAX] = {0};
+    //  tableau de nombre de valeur par VACC pour un homme
+    int nbModelMen[NB_VACC_MAX] = {0};
+    //  tableau de somme des valeurs existantes par VACC pour une femme
+    double modelWomen[NB_VACC_MAX] = {0};
+    //  tableau de nombre de valeur par VACC pour une femme
+    int nbModelWomen[NB_VACC_MAX] = {0};
     
     while (!feof(fiTrain) && movement == curMovement) // bloc logique
     {
@@ -113,7 +113,7 @@ errno_t createModels()
   return 0;
 }
 
-Gender getGender(char line[LINE_LENGTH_MAX])
+Gender getGender(char line[])
 {
   int gender = (int)getField(line, GENDER_FIELD);
   if(gender == 0)
@@ -127,9 +127,9 @@ Gender getGender(char line[LINE_LENGTH_MAX])
 void writeHeader(FILE* file)
 {
   fprintf_s(file, "movement");
-  for (int i = 0; i < NB_VAR_MAX; i++)
+  for (int i = 0; i < NB_VACC_MAX; i++)
     {
-      fprintf_s(file, ",VAR %d", i);
+      fprintf_s(file, ",VACC %d", i);
     }
 }
 
@@ -137,7 +137,7 @@ void processLine(char line[], double tab[], int nbTab[])
 {
   int iValue = 0;
   double value = getField(line, iValue + 4);
-  while ( iValue < NB_VAR_MAX && !isnan(value))
+  while ( iValue < NB_VACC_MAX && !isnan(value))
   {
     tab[iValue] += value;
     nbTab[iValue]++;
@@ -156,7 +156,7 @@ void writeFile(FILE *fiModel, FILE *fiMenModel, FILE *fiWomenModel, double model
   fprintf_s(fiMenModel, "%d", movement);
   fprintf_s(fiWomenModel, "%d", movement);
 
-  for(int i = 0; i < NB_VAR_MAX; i++)
+  for(int i = 0; i < NB_VACC_MAX; i++)
   {
     double menMean = modelMen[i] / nbModelMen[i];
     double womenMean = modelWomen[i] / nbModelWomen[i];

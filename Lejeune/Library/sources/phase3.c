@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <float.h>
 #include "../headers/library.h"
 
 #define START_VACC_MODEL 2
@@ -11,7 +12,7 @@ typedef struct model Model;
 struct model
 {
   int movement;
-  double vAccs[NB_VAR_MAX];
+  double vAccs[NB_VACC_MAX];
 };
 
 
@@ -61,16 +62,16 @@ int findBestModels(Model models[], FILE *pFiTest, int estimateClasses[], int rea
 {
   int nbTests = 0;
   char line[LINE_LENGTH_MAX];
-  double vAccs[NB_VAR_MAX];
+  double vAccs[NB_VACC_MAX];
   int iModel;
   double distance;
-  fgets(line, LINE_LENGTH_MAX, pFiTest); // 1er getLine pour le remove header
-  fgets(line,LINE_LENGTH_MAX,pFiTest);
+  removeHeader(pFiTest);
   while(!feof(pFiTest))
   {
+    fgets(line, LINE_LENGTH_MAX, pFiTest);
     if (nbTests % 10 == 0) printf(".");
     int movement = (int) getField(line, MOVEMENT_FIELD);
-    double closestDistance = INT_MAX;
+    double closestDistance = DBL_MAX;
     int bestMovement = -1;
     int nbVAccs = extractVAcc(vAccs, line, START_VACC_TESTSET);
     iModel = 0;
@@ -86,7 +87,7 @@ int findBestModels(Model models[], FILE *pFiTest, int estimateClasses[], int rea
     }
     estimateClasses[nbTests] = bestMovement;
     realClasses[nbTests] = movement;
-    fgets(line, LINE_LENGTH_MAX, pFiTest);
+    
     nbTests++;
   }
   return nbTests;
@@ -115,7 +116,6 @@ void convertFileToTable(FILE * pFiModel, Model models[])
   char line[LINE_LENGTH_MAX];
   
   removeHeader(pFiModel);
-  // TODO: tester si pas eof puis get line, while, fin while get line
 
   while( !feof(pFiModel) && nbModels < NB_MODELS)
   {
@@ -134,19 +134,9 @@ int extractVAcc(double vAccs[], char line[], int startColumn)
   int nbVAccs = 0;
   double vAcc;
 
-  // do
-  // {
-  //   vAcc = getField(line, startColumn + nbVAccs);
-  //   if (!isnan(vAcc)) 
-  //   {
-  //     vAccs[nbVAccs] = vAcc;
-  //     nbVAccs++;
-  //   }
-  // } while (nbVAccs < NB_VAR_MAX && !isnan(vAcc));
-
 
   vAcc = getField(line, startColumn + nbVAccs);
-  while (nbVAccs < NB_VAR_MAX && !isnan(vAcc)){
+  while (nbVAccs < NB_VACC_MAX && !isnan(vAcc)){
       vAccs[nbVAccs] = vAcc;
       nbVAccs++;
 

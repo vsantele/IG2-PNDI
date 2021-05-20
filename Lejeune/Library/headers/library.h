@@ -2,7 +2,7 @@
 #define LIBRARY_H
 
 
-  #define NB_VAR_MAX 600
+  #define NB_VACC_MAX 600
   #define NB_MODELS 6
   #define NB_USERS 24
   #define PERCENT_TO_TESTSETS 10
@@ -13,7 +13,7 @@
   #define MVT_LENGTH 4
 
 // 100 valeur arbitraire de sécurité
-  #define LINE_LENGTH_MAX 10 * NB_VAR_MAX + 100
+  #define LINE_LENGTH_MAX 10 * NB_VACC_MAX + 100
 
   #define MOVEMENT_FIELD 1
   #define ACC_X_NUM_FIELD 11
