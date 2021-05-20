@@ -5,8 +5,6 @@
 ## ExtractData
  - Analyse terminée
  - Code terminé
- 
- Le plus gros est fait, il faut encore relire le code et tout revérifier.
 
 ## Phase 2
   - Analyse terminée
