@@ -6,3 +6,4 @@ src/*ilk
 src/*.pdb
 *.obj
 *.pdb
+vs/*
