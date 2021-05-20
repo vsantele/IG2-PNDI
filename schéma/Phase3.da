@@ -5,7 +5,7 @@ struct model
 };
 
 NB_MODELS = 6
-NB_VAR_MAX = 600
+NB_VACC_MAX = 600
 LINE_LENGTH_MAX = 8000
 
 ---*
@@ -36,11 +36,11 @@ module(findBestModels; models, pFiTest; estimateClasses, realClasses, nbTests)
   realClasses = []
   nbTests = 0
 
-  // remove header
-  module(getLine; pFiTest; line )
+  module(removeHeader; pFiTest)
 
-  module(getLine; pFiTest; line)
   do while (!eof(pFiTest))
+    module(getLine; pFiTest; line)
+
     module(getMovement; line; movement)
     closestDistance = MAX_VALUE
     bestMovement = -1
@@ -56,7 +56,6 @@ module(findBestModels; models, pFiTest; estimateClasses, realClasses, nbTests)
     enddo
     estimateClasses[nbTests] = bestMovement
     realClasses[nbTests] = movement
-    module(getLine; pFiTest; line)
     nbTests++
   enddo
 
@@ -80,11 +79,11 @@ module(convertFileToTable; pFiModel; models)
 ---*
   models = []
   nbModels = 0
-  // remove header
-  module(getLine; pFiModel; line )
+  
+  module(removeHeader; pFiModel)
 
-  module(getLine; pFiModel; line)
-  do while (!eof(pFiModel))
+  do while (!eof(pFiModel) && nbModels < NB_MODELS)
+    module(getLine; pFiModel; line)
     module(getMovement; line; movement)
     module(extractVAcc; line, 2; vAccs, nbVAccs)
     model.movement = movement
@@ -92,20 +91,17 @@ module(convertFileToTable; pFiModel; models)
     models[nbModels] = model
 
     nbModels++
-
-    module(getLine; pFiModel; line)
   enddo
 ----
 
 module(extractVAcc; line, startColumn; vAccs, nbVAccs)
 ---*
   nbVAccs = 0;
-  do
-    module(getField;line, startColumn + nbVAccs; vAcc)
-    if (!isnan(vAcc))
+
+  module(getField;line, startColumn + nbVAccs; vAcc)
+  do while (nbVAccs < NB_VACC_MAX && !isnan(vAcc))
       vAccs[nbVAccs] = vAcc;
       nbVAccs++;
-    endif
-  enddo while (nbVAccs < NB_VAR_MAX && !isnan(vAcc));
-  return nbVAccs;
+    module(getField;line, startColumn + nbVAccs; vAcc)
+  enddo 
 ----

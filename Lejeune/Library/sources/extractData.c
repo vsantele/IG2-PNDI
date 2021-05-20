@@ -17,15 +17,15 @@ int getMovement(char folderName[]);
 int getGenderFromUsers(int userCode, int users[]);
 FILE * getRandomWriteFile(FILE *testFile, FILE *trainFile);
 double getAccVector(char line[]);
-errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender);
+errno_t processFile(char path[], FILE *fiOut, int userId, int movement, int gender);
 
 
 errno_t extractData() 
 {
   srand(time(NULL)); // améliore le pseudo-aléatoire
   
-  FILE* fiTestData = NULL;
-  FILE* fiTrainData = NULL;
+  FILE* pFiTestData = NULL;
+  FILE* pFiTrainData = NULL;
   int usersGender[NB_USERS];
   errno_t err;
   char path[PATH_LENGTH];
@@ -34,24 +34,24 @@ errno_t extractData()
     return errReadUsersGender;
 
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TEST_FILENAME);
-  err = fopen_s(&fiTestData, path, "w+");
-  if (fiTestData == NULL) 
+  err = fopen_s(&pFiTestData, path, "w+");
+  if (pFiTestData == NULL) 
   {
     printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
     return err;
   }
 
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TRAIN_FILENAME);
-  err = fopen_s(&fiTrainData, path, "w+");
-  if (fiTrainData == NULL)
+  err = fopen_s(&pFiTrainData, path, "w+");
+  if (pFiTrainData == NULL)
   {
     printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
-    fclose(fiTestData);
+    fclose(pFiTestData);
     return err;
   }
 
-  createHeader(fiTestData);
-  createHeader(fiTrainData);
+  createHeader(pFiTestData);
+  createHeader(pFiTrainData);
 
   for (int iFolder = 0; iFolder < NB_FOLDERS; iFolder++)
   {
@@ -65,8 +65,8 @@ errno_t extractData()
         int userCode = iFile + 1;
         int gender = getGenderFromUsers(userCode, usersGender);
         sprintf_s(path, PATH_LENGTH, "%s/%s/sub_%d.csv", ROOT_DATA_PATH, folderNames[iFolder], userCode);
-        FILE *fiOut = getRandomWriteFile(fiTestData, fiTrainData);
-        err = readFile(path, fiOut, userCode, idMovement, gender );
+        FILE *fiOut = getRandomWriteFile(pFiTestData, pFiTrainData);
+        err = processFile(path, fiOut, userCode, idMovement, gender );
         if (err != 0) 
         {
           printf("Erreur lors de l'ouverture du fichier %s : %d\n", path, err);
@@ -77,15 +77,15 @@ errno_t extractData()
     }
   }
 
-  fclose(fiTestData);
-  fclose(fiTrainData);
+  fclose(pFiTestData);
+  fclose(pFiTrainData);
 
   return 0;
 }
 
 void createHeader(FILE* file) 
 {
-  fprintf_s(file, "movement,gender,id");
+  fprintf_s(file, "movement,gender,userCode");
   for (int i = 0; i < NB_VACC_MAX; i++)
   {
     fprintf_s(file, ",VACC %d", i);
@@ -132,7 +132,7 @@ int getGenderFromUsers(int userCode, int users[])
   return users[userCode - 1];
 }
 
-errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
+errno_t processFile(char path[], FILE *fiOut, int userCode, int movement, int gender)
 {
   FILE *fiIn = NULL;
   errno_t err = fopen_s(&fiIn, path, "r");
@@ -145,7 +145,7 @@ errno_t readFile(char path[], FILE *fiOut, int userId, int movement, int gender)
   removeHeader(fiIn); 
   int nLines = 0;
   fprintf_s(fiOut, "\n");
-  fprintf_s(fiOut, "%d,%d,%d", movement, gender, userId);
+  fprintf_s(fiOut, "%d,%d,%d", movement, gender, userCode);
   while ( !feof(fiIn) && nLines < NB_VACC_MAX) 
   {
     fgets(line, LINE_LENGTH_MAX, fiIn);

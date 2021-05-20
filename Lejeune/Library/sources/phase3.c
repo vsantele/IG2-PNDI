@@ -22,7 +22,7 @@ int extractVAcc(double vAccs[], char line[], int startColumn);
 int findBestModels(Model models[], FILE* pFiTest, int estimateClasses[], int realClasses[]);
 
 // nbTests est un pointeur car la fonction useModel retourne une erreur mais on doit connaitre le nombre de valeur dans real et estimateClasses
-errno_t useModel(int* nbTests, int realClasses[], int estimateClasses[])
+errno_t useModel(int* pNbTests, int realClasses[], int estimateClasses[])
 {
   FILE *pFiTest = NULL;
   FILE *pFiModel = NULL;
@@ -50,8 +50,7 @@ errno_t useModel(int* nbTests, int realClasses[], int estimateClasses[])
 
   convertFileToTable(pFiModel, models);
 
-  
-  *nbTests = findBestModels(models, pFiTest, estimateClasses, realClasses);
+  *pNbTests = findBestModels(models, pFiTest, estimateClasses, realClasses);
 
   fclose(pFiTest);
   fclose(pFiModel);
@@ -77,13 +76,13 @@ int findBestModels(Model models[], FILE *pFiTest, int estimateClasses[], int rea
     iModel = 0;
     while(iModel < NB_MODELS)
     {
-        distance = getDistance(models[iModel].vAccs, vAccs, nbVAccs);
-        if(distance < closestDistance)
-        { 
-            closestDistance = distance; 
-            bestMovement = models[iModel].movement;
-          }
-          iModel++;
+      distance = getDistance(models[iModel].vAccs, vAccs, nbVAccs);
+      if(distance < closestDistance)
+      { 
+        closestDistance = distance; 
+        bestMovement = models[iModel].movement;
+      }
+      iModel++;
     }
     estimateClasses[nbTests] = bestMovement;
     realClasses[nbTests] = movement;
@@ -134,13 +133,12 @@ int extractVAcc(double vAccs[], char line[], int startColumn)
   int nbVAccs = 0;
   double vAcc;
 
-
   vAcc = getField(line, startColumn + nbVAccs);
   while (nbVAccs < NB_VACC_MAX && !isnan(vAcc)){
-      vAccs[nbVAccs] = vAcc;
-      nbVAccs++;
+    vAccs[nbVAccs] = vAcc;
+    nbVAccs++;
 
-      vAcc = getField(line, startColumn + nbVAccs);
+    vAcc = getField(line, startColumn + nbVAccs);
   }
   return nbVAccs;
 }

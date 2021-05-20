@@ -17,7 +17,7 @@ void writeFile(FILE *fiModel, FILE *fiMenModel, FILE *fiWomenModel, double model
 
 errno_t createModels() 
 {
-  FILE* fiTrain = NULL;
+  FILE* pFiTrain = NULL;
 
   FILE* fiModel = NULL;
   FILE* fiMenModel = NULL;
@@ -25,9 +25,9 @@ errno_t createModels()
 
   char path[PATH_LENGTH];
   sprintf_s(path, PATH_LENGTH, "%s/%s/%s", ROOT_OUT_PATH, DATA_FOLDER, TRAIN_FILENAME);
-  errno_t err = fopen_s(&fiTrain, path, "r");
+  errno_t err = fopen_s(&pFiTrain, path, "r");
 
-  if(fiTrain == NULL)
+  if(pFiTrain == NULL)
   {
     printf("Erreur ouverture %s, code : %d\n",path, err);
     return err;
@@ -38,7 +38,7 @@ errno_t createModels()
   if(fiModel == NULL)
   {
     printf("Erreur ouverture %s, code : %d\n", path, err);
-    fclose(fiTrain);
+    fclose(pFiTrain);
     return err;
   }
 
@@ -48,7 +48,7 @@ errno_t createModels()
   if(fiMenModel == NULL)
   {
     printf("Erreur ouverture %s, code : %d\n", path, err);
-    fclose(fiTrain);
+    fclose(pFiTrain);
     fclose(fiModel);
     return err;
   }
@@ -58,7 +58,7 @@ errno_t createModels()
 
   if(fiWomenModel == NULL)
   {
-    fclose(fiTrain);
+    fclose(pFiTrain);
     fclose(fiModel);
     fclose(fiMenModel);
     return err;
@@ -68,11 +68,11 @@ errno_t createModels()
   writeHeader(fiMenModel);
   writeHeader(fiWomenModel);
   
-  removeHeader(fiTrain);
+  removeHeader(pFiTrain);
 
   char line[LINE_LENGTH_MAX];
-  fgets(line, LINE_LENGTH_MAX, fiTrain);
-  while (!feof(fiTrain)) 
+  fgets(line, LINE_LENGTH_MAX, pFiTrain);
+  while (!feof(pFiTrain)) 
   {
     int curMovement = (int) getField(line, MOVEMENT_FIELD);
     int movement = curMovement;
@@ -86,7 +86,7 @@ errno_t createModels()
     //  tableau de nombre de valeur par VACC pour une femme
     int nbModelWomen[NB_VACC_MAX] = {0};
     
-    while (!feof(fiTrain) && movement == curMovement) // bloc logique
+    while (!feof(pFiTrain) && movement == curMovement) // bloc logique
     {
       Gender gender = getGender(line);
       
@@ -98,14 +98,14 @@ errno_t createModels()
         processLine(line, modelWomen, nbModelWomen);
       }
 
-      fgets(line, LINE_LENGTH_MAX, fiTrain);
+      fgets(line, LINE_LENGTH_MAX, pFiTrain);
       curMovement = (int) getField(line, MOVEMENT_FIELD);
     }
 
     writeFile(fiModel, fiMenModel, fiWomenModel, modelMen, nbModelMen, modelWomen, nbModelWomen, movement);
   }
 
-  fclose(fiTrain);
+  fclose(pFiTrain);
   fclose(fiModel);
   fclose(fiMenModel);
   fclose(fiWomenModel);
@@ -124,12 +124,12 @@ Gender getGender(char line[])
   return MAN;
 }
 
-void writeHeader(FILE* file)
+void writeHeader(FILE* pFile)
 {
-  fprintf_s(file, "movement");
+  fprintf_s(pFile, "movement");
   for (int i = 0; i < NB_VACC_MAX; i++)
     {
-      fprintf_s(file, ",VACC %d", i);
+      fprintf_s(pFile, ",VACC %d", i);
     }
 }
 

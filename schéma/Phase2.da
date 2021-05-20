@@ -2,86 +2,86 @@ FI_MODEL_FILENAME = "fiModel.csv"
 FI_MODEL_MEN_FILENAME = "fiModelMen.csv"
 FI_MODEL_WOMEN_FILENAME = "fiModelWomen.csv"
 FI_TRAIN_FILENAME = "train.csv"
-NB_VAR_MAX = 600
-enum gender = {FEMALE, MALE}
+NB_VACC_MAX = 600
+enum gender = {WOMAN, MAN}
 
 ---*
-module(openFile;FI_TRAIN_FILENAME, "read";fiTrain)
+pFiTrain = ouvrir FI_TRAIN_FILENAME
 
-module(openFile;FI_MODEL_FILENAME, "write"; fiModel)
-module(openFile;FI_MODEL_MEN_FILENAME, "write"; fiMenModel)
-module(openFile;FI_MODEL_WOMEN_FILENAME, "write"; fiWomenModel)
+pFiModel = FI_MODEL_FILENAME 
+pFiMenModel = FI_MODEL_MEN_FILENAME
+pFiWomenModel = FI_MODEL_WOMEN_FILENAME
 
-module(writeHeader; fiModel; )
-module(writeHeader; fiMenModel; )
-module(writeHeader; fiWomenModel; )
+module(writeHeader; pFiModel; )
+module(writeHeader; pFiMenModel; )
+module(writeHeader; pFiWomenModel; )
 
-module(removeHeader; fiTrain; fiTrain)
+module(removeHeader; pFiTrain; )
 
-module(getLine; fiTrain; line)
+module(getLine; pFiTrain; line)
 do while (!eof)
   module(getMovement; line; curMovement)
   movement = curMovement
-  // tableau de somme des valeurs existantes par VAR pour un homme
-  modelMen[NB_VAR_MAX] = {0} 
-  //  tableau de nombre de valeur par VAR pour un homme
-  nbModelMen[NB_VAR_MAX] = {0}
-  //  tableau de somme des valeurs existantes par VAR pour une femme
-  modelWomen[NB_VAR_MAX] = {0}
-  //  tableau de nombre de valeur par VAR pour une femme
-  nbModelWomen[NB_VAR_MAX] = {0} 
+  // tableau de somme des valeurs existantes par VACC pour un homme
+  modelMen[NB_VACC_MAX] = {0} 
+  //  tableau de nombre de valeur par VACC pour un homme
+  nbModelMen[NB_VACC_MAX] = {0}
+  //  tableau de somme des valeurs existantes par VACC pour une femme
+  modelWomen[NB_VACC_MAX] = {0}
+  //  tableau de nombre de valeur par VACC pour une femme
+  nbModelWomen[NB_VACC_MAX] = {0} 
   
-  do while(!eof(fiTrain) && movement == curMovement)
+  do while(!eof(pFiTrain) && movement == curMovement)
     module(getGender; line; gender)
 
-    if (gender == MALE)
+    if (gender == MAN)
       module(processLine; line, modelMen,nbModelMen;modelMen,nbModelMen)
     else
       module(processLine; line, modelWomen,nbModelWomen;modelWomen,nbModelWomen)
     endif
     
-    module(getLine; fiTrain; line)
+    module(getLine; pFiTrain; line)
     module(getMovement; line; curMovement)
   enddo
   module(writeFile; modelMen, nbModelMen, modelWomen, nbModelWomen, movement)
 enddo
 
-module(closeFile;fiTrain;)
-module(closeFile;fiModel;)
-module(closeFile;fiMenModel;)
-module(closeFile;fiWomenModel;)
+fermer pFiTrain
+fermer pFiModel
+fermer pFiMenModel
+fermer pFiWomenModel
 ----
 // les fichiers fiModel, fiMenModel et fiWomenModel sont aussi envoyé
 module(writeFile; modelMen, nbModelMen, modelWomen, nbModelWomen, movement)
 ---*
 
-module(writeMovement; fiModel, movement;)
-module(writeMovement; fiMenModel, movement;)
-module(writeMovement; fiWomenModel, movement;)
+module(writeNewLine; pFiMenModel;)
+module(writeNewLine; pFiWomenModel;)
+module(writeNewLine; pFiModel;)
+module(writeMovement; pFiModel, movement;)
+module(writeMovement; pFiMenModel, movement;)
+module(writeMovement; pFiWomenModel, movement;)
 
 i = 0
-do while (i < NB_VAR_MAX)
+do while (i < NB_VACC_MAX)
   menMean = modelMen[i] / nbModelMen[i]
   womenMean = modelWomen[i] / nbModelWomen[i]
   mean = (modelMen[i] + modelWomen[i]) / (nbModelMen[i] + nbModelWomen[i])
-  module(writeValue;fiMenModel, menMean ; )
-  module(writeValue;fiWomenModel, womenMean ; )
-  module(writeValue;fiModel, mean ; )
+  module(writeValue;pFiMenModel, menMean ; )
+  module(writeValue;pFiWomenModel, womenMean ; )
+  module(writeValue;pFiModel, mean ; )
   i++
 enddo
-  module(writeNewLine; fiMenModel;)
-  module(writeNewLine; fiWomenModel;)
-  module(writeNewLine; fiModel;)
 
 ----
 
 module(processLine; line, tab, nbTab;tab, nbTab)
-// tab = tableau de la somme des valeurs existantes par VAR
-// nbTab = tableau du nombre de valeurs par VAR
+// tab = tableau de la somme des valeurs existantes par VACC
+// nbTab = tableau du nombre de valeurs par VACC
 ---*
 iValue = 0
 
-do while (!eol(line) && iValue < NB_VAR_MAX)
+do while (!eol(line) && iValue < NB_VACC_MAX)
   module(getField; line, iValue+3; value)
   tab[iValue] += value;
   nbTab[iValue]++

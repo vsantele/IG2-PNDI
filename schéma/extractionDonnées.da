@@ -3,53 +3,56 @@ DATA_SUBJECT_INFO_FILENAME = "data_subjects_info.csv"
 TEST_OUTPUT_FILENAME = "testSet.csv"
 TRAIN_OUTPUT_FILENAME = "trainSet.csv"
 ---*
-module(createHeader; TEST_OUTPUT_FILENAME)
-module(createHeader; TRAIN_OUTPUT_FILENAME)
+module(readUsersGender; DATA_SUBJECT_INFO_FILENAME; users)
 
-module(readUsers; DATA_SUBJECT_INFO_FILENAME; users)
+pFiTest = ouvrir TEST_OUTPUT_FILENAME
+pFiTrain = ouvrir TRAIN_OUTPUT_FILENAME
+
+module(createHeader; pFiTest)
+module(createHeader; pFiTrain)
+
 iFolders = 0
 do while (iFolders < nbFolder)
   module(getMovement; dossiers[iFolders]; movement)
   iFiles = 0
-  do while (iFiles < nbFiles)
-    id = iFolder*nbUsers+iFile
+  do while (iFiles < nbUsers)
+    userCode = iFile + 1
     module(getGender; files[iFiles], users; gender)
-    module(randomWriteFile; ;outputData)
-    module(processFile; files[iFiles],outputData, movement, id, gender;)
+    module(randomWriteFile;pFiTest, pFiTrain;pFiOut)
+    module(processFile; files[iFiles],pFiOut, movement, userCode, gender;)
     iFiles++
   enddo
   iFolders++
 enddo
-module(closeFile; TEST_OUTPUT_FILENAME)
-module(closeFile; TRAIN_OUTPUT_FILENAME)
+
+fermer pFiTest
+fermer pFiTrain
 ----
 
-module(processFile; inputFilename, outputData, movement, id, gender;)
+module(processFile; inputFilename, pFiOut, movement, userCode, gender;)
 ---*
-  module(openFile;inputFilename, 'read'; inputData)
+  pFiIn  = ouvrir inputFilename
   // remove headers
-  module(getNextLine; inputData;line, isEndOfFile) 
-  module(getNextLine; inputData;line, isEndOfFile)
+  module(removeHeader; pFiIn;) 
+  module(writeNewLine, pFiOut)
    // movement, identifiant
-  module(writeInfo; movement, gender, id, outputData;)
-  lineNumber = 1
+  module(writeInfo;pFiOut, movement, gender, userCode;)
+  lineNumber = 0
   do while (!isEndOfFile && lineNumber <= LINES_COUNT )
+    module(getNextLine; pFiIn;line, isEndOfFile)
     module(getAccVector; line; vector)
     module(writeVector;vector, outputData;)
-    module(getNextLine; inputData;line, isEndOfFile)
     lineNumber++
   enddo
-
-  module(writeNewLine, outputData)
 ----
 
-module(randomWriteFile; ;outputFilename)
+module(randomWriteFile;pFiTest, pFiTrain;pFiOut)
 ---*
 module(random;;rand)
 
 if (rand <= 0.1)
-  outputFilename = TEST_OUTPUT_FILENAME
+  pFiOut = pFiTest
 else
-  outputFilename = TRAIN_OUTPUT_FILENAME
+  pFiOut = pFiTrain
 endif
 ----
