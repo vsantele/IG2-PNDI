@@ -56,9 +56,9 @@ function parseData(data) {
   let datasets = [];
   data = data.toString().split("\r\n");
   data.shift();
-  data.pop();
   data.forEach(line => {
     const arr = line.split(",")
+    if (arr.length === 0) return;
     const movement = arr.shift();
     console.log(movement);
     const dataset = {
